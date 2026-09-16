@@ -155,9 +155,8 @@ export const qrMenuPage: ServicePage = {
       a: 'Evet. Ürünlere fotoğraf ve açıklama eklenebilir. Fotoğraflar telefonda hızlı açılacak şekilde optimize edilir.',
     },
     {
-      q: 'Birden fazla mekânım var, her biri için ayrı menü olabilir mi?',
-      // TEYİT: Şube bazlı fiyat/ürün farkı panelde destekleniyor mu?
-      a: 'Evet. Her mekân için ayrı menü hazırlanabilir; aynı işletmenin farklı bölümleri veya şubeleri kendi menüleriyle yayınlanabilir.',
+      q: 'Birden fazla şubem var, her şube için ayrı menü olabilir mi?',
+      a: 'Evet. Şube menüsü desteklenir; her şube kendi menüsüyle yayınlanır ve misafir, bulunduğu şubenin menüsünü görür. Aynı işletmenin farklı bölümleri için de ayrı menüler hazırlanabilir.',
     },
     {
       q: 'QR menü fiyatı ne kadar?',
@@ -233,7 +232,6 @@ export const nfcPage: ServicePage = {
       id: 'guvenlik',
       title: 'Şifreli ve korumalı NFC etiketleri',
       paragraphs: [
-        // TEYİT: Kilitleme / şifreleme yöntemi teknik olarak doğrulanmalı.
         'Korumasız NFC etiketleri, uygun bir uygulamayla başkaları tarafından yeniden yazılabilir ve misafirler istenmeyen bir sayfaya yönlendirilebilir. onlinemenu-qr NFC etiketleri şifreli ve korumalıdır; etiketin yönlendirdiği adres yetkisiz kişilerce değiştirilemez.',
         'Bu sayede stantlarınız misafirlerinizin güvenliğini riske atmaz ve işletmenizin itibarını korur.',
       ],
@@ -269,9 +267,8 @@ export const nfcPage: ServicePage = {
       a: 'Stant yalnızca yorum bırakmayı kolaylaştırır; puanı ve yorumu misafir kendisi belirler. Google yönergeleri gereği yorum karşılığında indirim, hediye gibi teşvikler sunulmamalıdır.',
     },
     {
-      q: 'Stant başka bir adrese yönlendirilebilir mi?',
-      // TEYİT: Yönlendirme sonradan değiştirilebiliyor mu (dinamik adres)?
-      a: 'Google yorum ve Instagram dışında menünüz, web siteniz veya harita konumunuz gibi farklı adresler için de stant hazırlanabilir. İhtiyacınızı görüşmede belirlemeniz yeterlidir.',
+      q: 'Standın yönlendirdiği adres sonradan değiştirilebilir mi?',
+      a: 'Hayır. Güvenlik gereği NFC etiketi ve QR kod üretim sırasında tek bir adrese sabitlenir ve sonradan değiştirilemez. Bu nedenle yönlendirilecek Google yorum sayfası, Instagram hesabı veya diğer adresler sipariş aşamasında birlikte netleştirilir. Farklı bir adres için ayrı stant hazırlanır.',
     },
     {
       q: 'NFC standı fiyatı ne kadar?',

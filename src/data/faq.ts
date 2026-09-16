@@ -18,7 +18,6 @@ export const homeFaq: Faq[] = [
     a: 'NFC özelliği bulunan güncel iPhone ve Android telefonlarda telefonu standa yaklaştırmak yeterlidir. NFC özelliği olmayan veya kapalı olan telefonlar için her stantta QR kod da bulunur.',
   },
   {
-    // TEYİT: "yetkisiz kişilerce değiştirilemez" ifadesi etiket kilitleme yöntemiyle doğrulanmalı.
     q: 'NFC etiketleri güvenli mi?',
     a: 'NFC etiketlerimiz şifreli ve korumalıdır. Etiketin yönlendirdiği adres yetkisiz kişilerce değiştirilemez; misafirleriniz farklı bir sayfaya yönlendirilme riskiyle karşılaşmaz.',
   },
