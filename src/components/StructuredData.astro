@@ -1,0 +1,66 @@
+---
+/**
+ * Ana sayfa JSON-LD — işletme, site, hizmetler ve SSS.
+ * type="application/ld+json" çalıştırılabilir script değildir; CSP'den etkilenmez.
+ *
+ * LocalBusiness yerine Organization: LocalBusiness açık adres ister, adres henüz yok.
+ */
+import { site } from '../data/site';
+import { showcase, services } from '../data/services';
+import { homeFaq } from '../data/faq';
+import { servicePages } from '../data/pages';
+import { ORG_ID, WEBSITE_ID, abs, areaServed, faqPage, jsonLd } from '../lib/schema';
+
+const home = abs('/');
+const pageFor = (id: string) => servicePages.find((p) => p.serviceId === id);
+
+const graph = [
+  {
+    '@type': 'Organization',
+    '@id': ORG_ID,
+    name: site.name,
+    url: home,
+    logo: { '@type': 'ImageObject', url: abs('/icon-512.png'), width: 512, height: 512 },
+    image: abs('/og.jpg'),
+    description: site.description,
+    email: site.email,
+    telephone: `+${site.phones[0]!.e164}`,
+    legalName: site.legalName,
+    areaServed,
+    contactPoint: site.phones.map((phone) => ({
+      '@type': 'ContactPoint',
+      telephone: `+${phone.e164}`,
+      contactType: 'sales',
+      areaServed: 'TR',
+      availableLanguage: ['Turkish'],
+    })),
+    parentOrganization: { '@type': 'Organization', name: site.parent.name, url: site.parent.url },
+    knowsAbout: ['QR menü', 'Dijital menü', 'Karekod menü', 'NFC Google yorum standı', 'Restoran web sitesi'],
+    // TEYİT: Instagram / Google İşletme Profili bağlantıları eklenecek.
+    sameAs: [],
+  },
+  {
+    '@type': 'WebSite',
+    '@id': WEBSITE_ID,
+    url: home,
+    name: site.name,
+    inLanguage: 'tr-TR',
+    publisher: { '@id': ORG_ID },
+  },
+  ...[...showcase, ...services].map((item) => {
+    const page = pageFor(item.id);
+    return {
+      '@type': 'Service',
+      '@id': page ? `${abs(page.path)}#service` : `${home}#${item.id}`,
+      name: item.title,
+      description: item.body,
+      provider: { '@id': ORG_ID },
+      areaServed,
+      url: page ? abs(page.path) : `${home}#hizmetler`,
+    };
+  }),
+  faqPage(home, homeFaq),
+];
+---
+
+<script is:inline type="application/ld+json" set:html={jsonLd(graph)} />

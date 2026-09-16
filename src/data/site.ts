@@ -15,9 +15,11 @@ const secondaryPhone: Phone = { display: '+90 546 729 57 48', e164: '90546729574
 export const site = {
   name: 'onlinemenu-qr',
   url: 'https://onlinemenu-qr.com',
-  title: 'onlinemenu-qr — QR Menü ve İşletme Web Sitesi',
+  /** Arama sonucu başlığı — ~60 karakter altında, ana anahtar kelime başta. */
+  title: 'Dijital QR Menü ve NFC Google Yorum Standı | onlinemenu-qr',
+  /** Arama sonucu açıklaması — ~155 karakter. */
   description:
-    'QR menüden web sitesine, işletmenizin dijital vitrini tek elden. Panelden anında güncellenen, çok dilli ve işletmenize özel tasarlanan dijital menüler.',
+    'Kafe ve restoranlar için dijital QR menü, NFC Google yorum ve Instagram standı, işletme web sitesi. Panelden anında güncellenir; Türkçe, İngilizce, Arapça.',
 
   email: 'cabukrandevu@gmail.com',
   phones: [primaryPhone, secondaryPhone],

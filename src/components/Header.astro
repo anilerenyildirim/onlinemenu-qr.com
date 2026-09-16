@@ -2,9 +2,10 @@
 import Wordmark from './Wordmark.astro';
 
 const links = [
-  { href: '#hizmetler', label: 'Hizmetler' },
-  { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
-  { href: '#iletisim', label: 'İletişim' },
+  { href: '/qr-menu/', label: 'QR Menü' },
+  { href: '/nfc-google-yorum-standi/', label: 'NFC Stantlar' },
+  { href: '/#sss', label: 'SSS' },
+  { href: '/#iletisim', label: 'İletişim' },
 ];
 ---
 
@@ -12,7 +13,7 @@ const links = [
   <div class="container-x header-row">
     <Wordmark href="/" />
 
-    <nav aria-label="Sayfa içi" class="header-nav">
+    <nav aria-label="Ana menü" class="header-nav">
       <ul role="list">
         {
           links.map((link) => (
@@ -24,7 +25,7 @@ const links = [
       </ul>
     </nav>
 
-    <a href="#iletisim" class="btn btn-primary btn-sm">Teklif Al</a>
+    <a href="/#iletisim" class="btn btn-primary btn-sm">Teklif Al</a>
   </div>
 </header>
 
@@ -72,11 +73,13 @@ const links = [
   }
 
   @media (min-width: 768px) {
-    .header-nav {
-      display: block;
-    }
     .header-row {
       height: 4.75rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .header-nav {
+      display: block;
     }
   }
 </style>

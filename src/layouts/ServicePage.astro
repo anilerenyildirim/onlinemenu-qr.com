@@ -1,0 +1,399 @@
+---
+/**
+ * Hizmet detay sayfası — arama motoru için kapsamlı içerik. Teklif formu ana
+ * sayfada kalır; her CTA oraya (/#iletisim) yönlenir.
+ */
+import { Picture } from 'astro:assets';
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import type { ServicePage } from '../data/pages';
+import type { ShowcaseMedia } from '../data/services';
+import { clients } from '../data/clients';
+import { site, whatsappHref } from '../data/site';
+import { ORG_ID, WEBSITE_ID, abs, areaServed, breadcrumbList, faqPage, jsonLd } from '../lib/schema';
+
+interface Props {
+  page: ServicePage;
+}
+
+const { page } = Astro.props;
+const url = abs(page.path);
+
+const graph = [
+  {
+    '@type': 'WebPage',
+    '@id': url,
+    url,
+    name: page.seoTitle,
+    description: page.seoDescription,
+    inLanguage: 'tr-TR',
+    isPartOf: { '@id': WEBSITE_ID },
+    breadcrumb: { '@id': `${url}#breadcrumb` },
+  },
+  breadcrumbList(url, [
+    { name: 'Ana sayfa', path: '/' },
+    { name: page.breadcrumb, path: page.path },
+  ]),
+  {
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: page.h1,
+    description: page.seoDescription,
+    provider: { '@type': 'Organization', '@id': ORG_ID, name: site.name, url: abs('/') },
+    areaServed,
+    url,
+  },
+  faqPage(url, page.faq),
+];
+
+const frameStyle = (m: ShowcaseMedia) => `--focus:${m.focus ?? '50% 50%'};--zoom:${m.zoom ?? 1};--ratio:${m.ratio ?? '4 / 5'}`;
+const formats: ('avif' | 'webp')[] = ['avif', 'webp'];
+const widths = [480, 800, 1200];
+const phone = site.phones[0]!;
+---
+
+<Base title={page.seoTitle} description={page.seoDescription}>
+  <script is:inline slot="head" type="application/ld+json" set:html={jsonLd(graph)} />
+  <Header />
+
+  <main id="icerik">
+    <section class="intro" aria-labelledby="sayfa-baslik">
+      <div class="container-x">
+        <Breadcrumbs items={[{ label: 'Ana sayfa', href: '/' }, { label: page.breadcrumb }]} />
+        <div class="intro-grid">
+          <div>
+            <h1 id="sayfa-baslik" class="intro-title">{page.h1}</h1>
+            <p class="intro-lede">{page.lede}</p>
+            <div class="cta-row">
+              <a href="/#iletisim" class="btn btn-primary">Teklif Al</a>
+              <a href={whatsappHref} class="btn btn-ghost" target="_blank" rel="noopener">
+                WhatsApp ile yazın<span class="sr-only"> (yeni sekmede açılır)</span>
+              </a>
+            </div>
+          </div>
+          <figure class="shot">
+            <div class="shot-frame" style={frameStyle(page.heroMedia)}>
+              <Picture
+                src={page.heroMedia.image}
+                alt={page.heroMedia.alt}
+                formats={formats}
+                widths={widths}
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </div>
+            <figcaption>{page.heroMedia.caption}</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <nav class="container-x toc" aria-label="Bu sayfada">
+      <p class="toc-label">Bu sayfada</p>
+      <ul role="list">
+        {
+          page.blocks.map((block) => (
+            <li>
+              <a href={`#${block.id}`}>{block.title}</a>
+            </li>
+          ))
+        }
+        <li><a href="#sss">Sık sorulan sorular</a></li>
+      </ul>
+    </nav>
+
+    <div class="container-x blocks">
+      {
+        page.blocks.map((block) => (
+          <section id={block.id} class="block" aria-labelledby={`${block.id}-title`}>
+            <h2 id={`${block.id}-title`} class="block-title">
+              {block.title}
+            </h2>
+
+            <div class="block-body">
+              {block.kind === 'steps' ? (
+                <ol class="steps" role="list">
+                  {block.steps.map((step, i) => (
+                    <li class="step">
+                      <span class="step-num" aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <h3 class="step-title">{step.title}</h3>
+                      <p>{step.body}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                block.paragraphs.map((p) => <p>{p}</p>)
+              )}
+
+              {block.kind === 'text' && block.list && (
+                <ul class="list" role="list">
+                  {block.list.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              )}
+
+              {block.kind === 'media' && (
+                <figure class="shot shot--inline">
+                  <div class="shot-frame" style={frameStyle(block.media)}>
+                    <Picture
+                      src={block.media.image}
+                      alt={block.media.alt}
+                      formats={formats}
+                      widths={widths}
+                      sizes="(min-width: 1024px) 40vw, 100vw"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <figcaption>{block.media.caption}</figcaption>
+                </figure>
+              )}
+
+              {block.kind === 'clients' && (
+                <ul class="clients" role="list">
+                  {clients.map((client) => (
+                    <li>
+                      <a href={client.url} target="_blank" rel="noopener">
+                        <span>
+                          {client.name}
+                          <span class="sr-only"> dijital menüsü (yeni sekmede açılır)</span>
+                        </span>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                          <path d="M4 10 10 4M5 4h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+
+    <Faq items={page.faq} tone="surface" />
+
+    <section class="cta" aria-labelledby="cta-title">
+      <div class="container-x">
+        <h2 id="cta-title" class="section-title">{page.cta.title}</h2>
+        <p class="cta-body">{page.cta.body}</p>
+        <div class="cta-row">
+          <a href="/#iletisim" class="btn btn-primary">Teklif formuna git</a>
+          <a href={`tel:+${phone.e164}`} class="btn btn-ghost">{phone.display}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>
+
+<script>
+  import '../scripts/app';
+</script>
+
+<style>
+  .intro {
+    padding-block: 2.5rem 4rem;
+  }
+  .intro-grid {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: 2rem;
+  }
+  .intro-title {
+    max-width: 18ch;
+    font-size: clamp(2.25rem, 5vw, 4rem);
+  }
+  .intro-lede {
+    margin-top: 1.25rem;
+    max-width: 36rem;
+    font-size: 1.125rem;
+    color: var(--color-muted);
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .shot {
+    margin: 0;
+  }
+  .shot-frame {
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    border-radius: 0.875rem;
+    background: var(--color-surface);
+  }
+  .shot-frame :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focus);
+    transform: scale(var(--zoom));
+    transform-origin: var(--focus);
+  }
+  figcaption {
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+
+  .toc {
+    padding-block: 1.5rem;
+    border-block: 1px solid var(--color-line);
+  }
+  .toc-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .toc ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.9375rem;
+  }
+  .toc a {
+    color: var(--color-muted);
+    transition: color 0.2s ease;
+  }
+  .toc a:hover {
+    color: var(--color-text);
+  }
+
+  .blocks {
+    padding-block: 1rem 4rem;
+  }
+  .block {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 3rem;
+    scroll-margin-top: 5rem;
+  }
+  .block + .block {
+    border-top: 1px solid var(--color-line);
+  }
+  .block-title {
+    max-width: 20ch;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  }
+  .block-body {
+    display: grid;
+    gap: 1rem;
+    max-width: 44rem;
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+  }
+
+  .list {
+    display: grid;
+    gap: 0.625rem;
+    margin-top: 0.25rem;
+  }
+  .list li {
+    position: relative;
+    padding-left: 1.5rem;
+    color: var(--color-text);
+  }
+  .list li::before {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 0.8em;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--color-muted);
+  }
+
+  .steps {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .step {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line-strong);
+  }
+  .step-num {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+  .step-title {
+    margin-top: 0.5rem;
+    font-size: 1.375rem;
+    color: var(--color-text);
+  }
+  .step p {
+    margin-top: 0.5rem;
+  }
+
+  .shot--inline {
+    margin-top: 1rem;
+  }
+
+  .clients {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .clients a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    color: var(--color-text);
+    transition: border-color 0.2s ease;
+  }
+  .clients a:hover {
+    border-color: var(--color-muted);
+  }
+
+  .cta {
+    padding-block: 5rem 6rem;
+  }
+  .cta-body {
+    margin-top: 1rem;
+    max-width: 36rem;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .intro {
+      padding-block: 3rem 5rem;
+    }
+    .intro-grid {
+      grid-template-columns: 6fr 5fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .block {
+      grid-template-columns: 4fr 7fr;
+      gap: 4rem;
+      padding-block: 4rem;
+    }
+    .block-body {
+      max-width: none;
+    }
+  }
+</style>

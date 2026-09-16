@@ -7,7 +7,8 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   site: 'https://onlinemenu-qr.com',
   trailingSlash: 'ignore',
-  integrations: [react(), sitemap()],
+  // kvkk: taslak yasal metin, noindex — sitemap'te de yer almaz
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/kvkk') })],
   build: {
     // CSP: script'ler dosya olarak çıksın, inline script sayısı minimumda kalsın.
     inlineStylesheets: 'auto',

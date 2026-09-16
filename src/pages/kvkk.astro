@@ -16,7 +16,8 @@ import { site } from '../data/site';
 const TODO = '[TEYİT: Hukukçu tarafından doldurulacak]';
 ---
 
-<Base title="KVKK Aydınlatma Metni — onlinemenu-qr" description="onlinemenu-qr kişisel verilerin korunması aydınlatma metni.">
+<!-- TEYİT: Hukuki metin tamamlanınca noindex kaldırılıp sitemap'e eklenebilir. -->
+<Base title="KVKK Aydınlatma Metni | onlinemenu-qr" description="onlinemenu-qr kişisel verilerin korunması aydınlatma metni." noindex>
   <Header />
   <main id="icerik" class="container-x legal">
     <h1>KVKK Aydınlatma Metni</h1>
@@ -49,6 +50,8 @@ const TODO = '[TEYİT: Hukukçu tarafından doldurulacak]';
     <ul>
       <li>Cloudflare (barındırma, veritabanı, bot koruması)</li>
       <li>Resend (bildirim e-postası)</li>
+      <!-- TEYİT: Form backend'i yayına girene kadar talepler WhatsApp (Meta) üzerinden iletiliyor. -->
+      <li>WhatsApp (form talebinin iletilmesi)</li>
     </ul>
     <p class="todo">Yurt dışına aktarım dayanağı: {TODO}</p>
 

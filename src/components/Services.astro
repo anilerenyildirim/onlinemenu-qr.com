@@ -7,6 +7,9 @@ import { Picture } from 'astro:assets';
 import SpotlightCard from './SpotlightCard.astro';
 import { showcase, services } from '../data/services';
 import { site } from '../data/site';
+import { servicePages } from '../data/pages';
+
+const detailOf = (id: string) => servicePages.find((p) => p.serviceId === id);
 ---
 
 <section id="hizmetler" class="section" aria-labelledby="hizmetler-title">
@@ -46,6 +49,11 @@ import { site } from '../data/site';
               {item.title}
             </h3>
             <p class="feature-body">{item.body}</p>
+            {detailOf(item.id) && (
+              <a class="btn btn-ghost feature-more" href={detailOf(item.id)!.path}>
+                {item.id === 'qr-menu' ? 'QR menü hakkında detaylı bilgi' : 'NFC stantlar hakkında detaylı bilgi'}
+              </a>
+            )}
             {item.id === 'qr-menu' && (
               <a class="feature-link" href={site.sampleMenuUrl} target="_blank" rel="noopener">
                 Canlı menüyü açın<span class="sr-only"> (yeni sekmede açılır)</span>
@@ -129,11 +137,16 @@ import { site } from '../data/site';
     font-size: 1.0625rem;
     color: var(--color-muted);
   }
+  .feature-more {
+    display: flex;
+    width: fit-content;
+    margin-top: 1.75rem;
+  }
   .feature-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: 1.75rem;
+    margin-top: 1.25rem;
     padding-bottom: 0.25rem;
     border-bottom: 1px solid var(--color-line-strong);
     font-weight: 600;

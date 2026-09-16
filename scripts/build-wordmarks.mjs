@@ -10,56 +10,13 @@
  *
  * Çalıştırma: node scripts/build-wordmarks.mjs  (çıktı commit'lenir)
  */
-import { readFileSync, writeFileSync } from 'node:fs';
-import opentype from 'opentype.js';
+import { writeFileSync } from 'node:fs';
+import { createFont } from './lib/text-path.mjs';
 
-const buf = readFileSync('node_modules/@fontsource/fraunces/files/fraunces-latin-ext-700-normal.woff');
-const latin = readFileSync('node_modules/@fontsource/fraunces/files/fraunces-latin-700-normal.woff');
-const fontExt = opentype.parse(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength));
-const fontLatin = opentype.parse(latin.buffer.slice(latin.byteOffset, latin.byteOffset + latin.byteLength));
-
-// Türkçe ı/ş/ğ latin-ext alt kümesinde, geri kalanı latin'de.
-const glyphFont = (ch) => (fontLatin.charToGlyphIndex(ch) > 0 ? fontLatin : fontExt);
-
-// opentype.js toPathData() bazı koordinatlarda "NaN" basıyor; komutları kendimiz yazıyoruz.
-const n = (v) => {
-  const r = Math.round(v * 10) / 10;
-  if (!Number.isFinite(r)) throw new Error('geçersiz koordinat');
-  return String(r);
-};
-function serialize(commands) {
-  return commands
-    .map((c) => {
-      switch (c.type) {
-        case 'M':
-        case 'L':
-          return `${c.type}${n(c.x)} ${n(c.y)}`;
-        case 'Q':
-          return `Q${n(c.x1)} ${n(c.y1)} ${n(c.x)} ${n(c.y)}`;
-        case 'C':
-          return `C${n(c.x1)} ${n(c.y1)} ${n(c.x2)} ${n(c.y2)} ${n(c.x)} ${n(c.y)}`;
-        default:
-          return 'Z';
-      }
-    })
-    .join('');
-}
-
-function textPath(text, size, x, y) {
-  let d = '';
-  let cursor = x;
-  for (const ch of text) {
-    const f = glyphFont(ch);
-    const g = f.charToGlyph(ch);
-    d += serialize(g.getPath(cursor, y, size).commands);
-    cursor += (g.advanceWidth / f.unitsPerEm) * size;
-  }
-  return { d, width: cursor - x };
-}
-
-function measure(text, size) {
-  return textPath(text, size, 0, 0).width;
-}
+const DIR = 'node_modules/@fontsource/fraunces/files';
+const fraunces = createFont({ latin: `${DIR}/fraunces-latin-700-normal.woff`, ext: `${DIR}/fraunces-latin-ext-700-normal.woff` });
+const textPath = (text, size, x, y) => fraunces.path(text, size, x, y);
+const measure = (text, size) => fraunces.measure(text, size);
 
 function wordmark(sub) {
   const TOP = 100;

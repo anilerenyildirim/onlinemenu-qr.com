@@ -121,8 +121,73 @@ function initMagnet() {
   );
 }
 
+/**
+ * GEÇİCİ form gönderimi — /api/contact (aşama 3) yazılana kadar doğrulanmış talebi
+ * WhatsApp mesajı olarak açar. Hiçbir veri tarayıcıda saklanmaz.
+ */
+function initContactForm() {
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+  if (!form || !status) return;
+
+  const TR_PHONE = /^(?:\+?90|0)?5\d{9}$|^(?:\+?90|0)?[2-4]\d{9}$/;
+  const phone = form.elements.namedItem('phone') as HTMLInputElement;
+  const waNumber = form.dataset.wa;
+
+  const show = (text: string, tone: 'ok' | 'error') => {
+    status.textContent = text;
+    status.dataset.tone = tone;
+    status.hidden = false;
+  };
+
+  phone.addEventListener('input', () => {
+    phone.setCustomValidity('');
+    phone.removeAttribute('aria-invalid');
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const digits = phone.value.replace(/[\s()-]/g, '');
+    phone.setCustomValidity(digits && !TR_PHONE.test(digits) ? 'Geçerli bir Türkiye telefon numarası girin (örn. 0532 123 45 67).' : '');
+
+    if (!form.checkValidity()) {
+      form.querySelectorAll<HTMLInputElement>('input, textarea').forEach((el) => {
+        el.toggleAttribute('aria-invalid', !el.validity.valid);
+      });
+      form.reportValidity();
+      show('Lütfen işaretli alanları kontrol edin.', 'error');
+      return;
+    }
+    if (!waNumber) {
+      show('Talep şu an iletilemedi. Lütfen bizi telefonla arayın.', 'error');
+      return;
+    }
+
+    const data = new FormData(form);
+    const labels = [...form.querySelectorAll<HTMLInputElement>('input[name="services"]:checked')].map(
+      (el) => el.nextElementSibling?.textContent?.trim() ?? el.value,
+    );
+    const lines = [
+      'Merhaba, onlinemenu-qr için teklif almak istiyorum.',
+      '',
+      `Ad soyad: ${data.get('name')}`,
+      `İşletme: ${data.get('business')}`,
+      `Telefon: ${data.get('phone')}`,
+      data.get('email') ? `E-posta: ${data.get('email')}` : '',
+      labels.length ? `İlgilendiğim hizmetler: ${labels.join(', ')}` : '',
+      data.get('message') ? `Mesaj: ${data.get('message')}` : '',
+    ].filter((line, i) => line !== '' || i === 1);
+
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
+    show('WhatsApp açıldı. Mesajı göndermeniz yeterli; en kısa sürede size dönüş yapacağız.', 'ok');
+    form.reset();
+  });
+}
+
 initHeader();
 initReveal();
 initLogoLoop();
 initSpotlight();
 initMagnet();
+initContactForm();

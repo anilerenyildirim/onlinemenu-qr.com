@@ -1,0 +1,39 @@
+---
+interface Props {
+  items: { label: string; href?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<nav aria-label="Sayfa konumu" class="crumbs">
+  <ol role="list">
+    {
+      items.map((item, i) => (
+        <li>
+          {item.href && i < items.length - 1 ? <a href={item.href}>{item.label}</a> : <span aria-current="page">{item.label}</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+  }
+  li + li::before {
+    content: '/';
+    margin-right: 0.5rem;
+    color: var(--color-line-strong);
+  }
+  a:hover {
+    color: var(--color-text);
+  }
+  [aria-current] {
+    color: var(--color-text);
+  }
+</style>

@@ -2,8 +2,8 @@
 /**
  * İletişim — doğrudan kanallar + teklif formu.
  *
- * Aşama 2: form işaretlemesi ve native doğrulama. Gönderim JS'i, honeypot,
- * Turnstile ve /api/contact aşama 3'te bağlanacak.
+ * GEÇİCİ: /api/contact (D1 + Turnstile + Resend) aşama 3'te yazılana kadar form,
+ * doğrulanmış talebi WhatsApp mesajı olarak iletir (app.ts → initContactForm).
  */
 import { site, whatsappHref } from '../data/site';
 import { serviceOptions } from '../data/services';
@@ -40,7 +40,7 @@ import { serviceOptions } from '../data/services';
       </div>
     </div>
 
-    <form class="form" action="/api/contact" method="post" novalidate data-contact-form data-reveal>
+    <form class="form" action="/api/contact" method="post" novalidate data-contact-form data-wa={site.whatsapp.phone.e164} data-reveal>
       <div class="field">
         <label for="f-name">Ad soyad <span aria-hidden="true">*</span></label>
         <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100" />
@@ -95,11 +95,15 @@ import { serviceOptions } from '../data/services';
       <label class="consent">
         <input type="checkbox" name="kvkk" value="1" required />
         <span>
-          <a href="/kvkk" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>'ni okudum; bilgilerimin teklif amacıyla işlenmesini kabul ediyorum. <span aria-hidden="true">*</span>
+          <a href="/kvkk/" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>'ni okudum; bilgilerimin teklif amacıyla işlenmesini kabul ediyorum. <span aria-hidden="true">*</span>
         </span>
       </label>
 
-      <button type="submit" class="btn btn-primary submit">Teklif İste</button>
+      <div class="submit-row">
+        <button type="submit" class="btn btn-primary submit">Teklif İste</button>
+        <p class="hint">Talebiniz WhatsApp üzerinden bize iletilir.</p>
+      </div>
+      <p class="form-status" role="status" aria-live="polite" data-form-status hidden></p>
     </form>
   </div>
 </section>
@@ -291,9 +295,27 @@ import { serviceOptions } from '../data/services';
     text-underline-offset: 3px;
   }
 
+  .submit-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
   .submit {
-    justify-self: start;
     min-width: 10rem;
+  }
+  .form-status {
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-line-strong);
+    font-size: 0.9375rem;
+  }
+  .form-status[data-tone='error'] {
+    border-color: #e5a3a3;
+  }
+  [aria-invalid='true'] {
+    border-color: #e5a3a3;
   }
 
   @media (min-width: 640px) {

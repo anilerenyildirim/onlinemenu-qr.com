@@ -1,6 +1,7 @@
 ---
 import Wordmark from './Wordmark.astro';
 import { site, whatsappHref } from '../data/site';
+import { servicePages } from '../data/pages';
 ---
 
 <footer class="footer">
@@ -12,6 +13,13 @@ import { site, whatsappHref } from '../data/site';
       </div>
 
       <ul role="list" class="footer-links">
+        {
+          servicePages.map((page) => (
+            <li>
+              <a href={page.path}>{page.breadcrumb}</a>
+            </li>
+          ))
+        }
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         {
           site.phones.map((phone) => (
@@ -23,7 +31,7 @@ import { site, whatsappHref } from '../data/site';
         <li>
           <a href={whatsappHref} target="_blank" rel="noopener">WhatsApp<span class="sr-only"> (yeni sekmede açılır)</span></a>
         </li>
-        <li><a href="/kvkk">KVKK Aydınlatma Metni</a></li>
+        <li><a href="/kvkk/">KVKK Aydınlatma Metni</a></li>
       </ul>
     </div>
 

@@ -45,7 +45,7 @@ export const showcase: Showcase[] = [
   },
   {
     id: 'nfc-kart',
-    title: 'NFC ve QR kartlar',
+    title: 'NFC Google yorum ve Instagram stantları',
     body: 'Google yorumlarınız, Instagram hesabınız ve diğer adresleriniz için hem QR hem NFC ile çalışan kartlar. Misafir telefonunu karta yaklaştırır, sayfa açılır. NFC etiketlerimiz şifreli ve korumalıdır; müşterilerinizin güvenliğini riske atmaz.',
     media: [
       {
@@ -84,7 +84,7 @@ export const services: Service[] = [
 /** Formdaki "ilgilendiğiniz hizmetler" seçenekleri — id'ler backend'de de doğrulanır. */
 export const serviceOptions = [
   { id: 'qr-menu', label: 'QR menü' },
-  { id: 'nfc-kart', label: 'NFC / QR kart' },
+  { id: 'nfc-kart', label: 'NFC yorum standı' },
   { id: 'web-sitesi', label: 'Web sitesi' },
   { id: 'coklu-dil', label: 'Çoklu dil' },
 ] as const;
