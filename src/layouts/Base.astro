@@ -1,0 +1,89 @@
+---
+/**
+ * Ortak iskelet.
+ *
+ * <head> içindeki TEK inline script (intro kapısı) boyamadan önce çalışmak
+ * zorunda; bu yüzden dosyaya taşınamaz. CSP'de hash ile izinlenecek (aşama 4).
+ *   · html.js        → JS var; reveal / blur-text başlangıç durumları devreye girer
+ *   · html.intro     → preloader görünür (yalnız ilk ziyaret, reduced-motion değil)
+ *   · html.is-ready  → içerik animasyonları başlayabilir
+ * JS kapalıysa bu sınıfların hiçbiri eklenmez: overlay display:none kalır,
+ * metinler statik ve görünür render edilir.
+ *
+ * Fail-safe: modül script'i hiç yüklenmese bile 2.5 sn'de overlay kalkar.
+ */
+import '@fontsource-variable/hanken-grotesk/wght.css';
+import '../styles/global.css';
+
+import hankenLatin from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
+
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Açılış animasyonu yalnız ana sayfada. */
+  intro?: boolean;
+}
+
+const { title = site.title, description = site.description, intro = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0C0C0A" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preload" href={hankenLatin} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+
+    {
+      intro ? (
+        <script is:inline>
+          (function(){var d=document.documentElement,s=1;d.classList.add('js');try{s=matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('omq:intro')==='1'}catch(e){}d.classList.add(s?'is-ready':'intro');setTimeout(function(){d.classList.remove('intro');d.classList.add('is-ready')},2500)})();
+        </script>
+      ) : (
+        <script is:inline>
+          document.documentElement.classList.add('js','is-ready');
+        </script>
+      )
+    }
+  </head>
+  <body>
+    <a href="#icerik" class="skip-link">İçeriğe geç</a>
+    <slot name="overlay" />
+    <slot />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 200;
+    padding: 0.625rem 1rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font-weight: 600;
+    font-size: 0.875rem;
+    translate: 0 -200%;
+  }
+  .skip-link:focus-visible {
+    translate: 0 0;
+  }
+</style>

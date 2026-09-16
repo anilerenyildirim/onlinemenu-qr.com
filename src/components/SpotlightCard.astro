@@ -1,0 +1,53 @@
+---
+/**
+ * SpotlightCard — React Bits "SpotlightCard" bileşeninden uyarlandı.
+ *
+ * Orijinaldeki React state (position/opacity/isFocused) yerine CSS değişkenleri:
+ * app.ts tek bir delegated pointermove ile --spot-x/--spot-y yazar, ışığın
+ * görünürlüğü :hover / :focus-within ile CSS'te. Hydration yok.
+ * Yalnız hover destekli ince işaretçide çalışır; dokunmatikte statik kart.
+ */
+interface Props {
+  tag?: 'article' | 'div' | 'li';
+  class?: string;
+}
+
+const { tag: Tag = 'article', class: className } = Astro.props;
+---
+
+<Tag class:list={['spotlight', className]} data-spotlight>
+  <slot />
+</Tag>
+
+<style>
+  .spotlight {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: 1.5rem;
+    background: var(--color-surface);
+    transition: border-color 0.4s ease;
+  }
+  .spotlight::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at var(--spot-x, 50%) var(--spot-y, 50%), rgb(207 227 138 / 0.11), transparent 80%);
+    transition: opacity 0.5s ease-in-out;
+  }
+  .spotlight:focus-within::before {
+    opacity: 1;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .spotlight:hover {
+      border-color: var(--color-line-strong);
+    }
+    .spotlight:hover::before {
+      opacity: 1;
+    }
+  }
+</style>

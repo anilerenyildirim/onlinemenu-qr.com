@@ -1,0 +1,156 @@
+---
+/**
+ * Açılış animasyonu — işaret stroke-draw + wordmark clip reveal, ardından
+ * overlay yukarı doğru clip-path ile kalkar.
+ *
+ * Zaman bütçesi (overlay'in ilk karesinden itibaren):
+ *   0–650 ms   reveal
+ *   650–850    sayfa hazırsa (load + fonts) hemen, değilse en geç 850'de çıkış başlar
+ *   +350 ms    çıkış   → toplam ≤ ~1.2 sn
+ *   2500 ms    <head> fail-safe: script hiç çalışmasa da overlay kalkar
+ *
+ * İçerik overlay'in ARKASINDA zaten render edilmiş durumda; LCP bloklanmaz.
+ * Overlay aria-hidden ve odaklanamaz: ekran okuyucu ve klavye doğrudan içerikle
+ * başlar. Tıklama veya herhangi bir tuş (Esc dahil) animasyonu atlar.
+ */
+import Glyph from './Glyph.astro';
+---
+
+<div class="preloader" data-preloader aria-hidden="true">
+  <div class="pl-inner">
+    <Glyph size={56} draw class="pl-glyph" />
+    <span class="pl-word">onlinemenu<span class="pl-qr">-qr</span></span>
+  </div>
+</div>
+
+<script>
+  const MIN_REVEAL = 650;
+  const LATEST_EXIT = 850;
+  const EXIT = 350;
+  const SKIP_EXIT = 180;
+  const FLAG = 'omq:intro';
+
+  const root = document.documentElement;
+  const overlay = document.querySelector<HTMLElement>('[data-preloader]');
+
+  if (overlay && root.classList.contains('intro')) {
+    // Tek boolean UX bayrağı; sessionStorage'ın başka kullanımı yok.
+    try {
+      sessionStorage.setItem(FLAG, '1');
+    } catch {
+      /* depolama kapalıysa her ziyarette gösterilir — kabul edilebilir */
+    }
+
+    // <head> script'i ile aynı saat: performance.now() ≈ navigasyon başlangıcı
+    const elapsed = () => performance.now();
+    const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, Math.max(0, ms)));
+
+    let done = false;
+    const finish = (skip = false) => {
+      if (done) return;
+      done = true;
+      const duration = skip ? SKIP_EXIT : EXIT;
+      overlay.style.setProperty('--pl-exit', `${duration}ms`);
+      overlay.classList.add('is-leaving');
+      root.classList.add('is-ready');
+      setTimeout(() => root.classList.remove('intro'), duration);
+      removeEventListener('keydown', onKey);
+    };
+    const onKey = () => finish(true);
+
+    overlay.addEventListener('click', () => finish(true), { once: true });
+    addEventListener('keydown', onKey);
+
+    const pageReady =
+      document.readyState === 'complete'
+        ? Promise.resolve()
+        : new Promise<void>((r) => addEventListener('load', () => r(), { once: true }));
+
+    const start = elapsed();
+    Promise.race([
+      Promise.all([pageReady, document.fonts.ready, wait(MIN_REVEAL - start)]),
+      wait(LATEST_EXIT - start),
+    ]).then(() => finish());
+  }
+</script>
+
+<style>
+  .preloader {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    place-items: center;
+    background: var(--color-bg);
+    cursor: pointer;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path var(--pl-exit, 350ms) cubic-bezier(0.7, 0, 0.2, 1);
+  }
+  :global(html.intro) .preloader {
+    display: grid;
+  }
+  .preloader.is-leaving {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  .pl-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--color-text);
+    transition: opacity calc(var(--pl-exit, 350ms) * 0.6) ease;
+  }
+  .is-leaving .pl-inner {
+    opacity: 0;
+  }
+
+  /* İşaret: dört çizgi sırayla çizilir, nokta en sonda belirir */
+  .preloader :global(.pl-glyph path) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: pl-draw 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(var(--i) * 60ms);
+  }
+  .preloader :global(.pl-glyph .glyph-dot) {
+    transform-origin: 26.5px 26.5px;
+    scale: 0;
+    animation: pl-dot 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.45s forwards;
+  }
+
+  .pl-word {
+    font-family: var(--font-sans);
+    font-size: clamp(1.625rem, 4.5vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    clip-path: inset(0 100% 0 0);
+    animation: pl-wipe 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  }
+  .pl-qr {
+    color: var(--color-accent);
+  }
+
+  @keyframes pl-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes pl-dot {
+    to {
+      scale: 1;
+    }
+  }
+  @keyframes pl-wipe {
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* <head> reduced-motion'da zaten intro sınıfı eklemiyor; bu ikinci emniyet. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(html.intro) .preloader {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+/**
+ * onlinemenu-qr işareti: yuvarlatılmış çerçeve (menü kartı / ekran) içinde
+ * QR'ın üç konum karesi; dördüncü köşede vurgu renginde "canlı" nokta.
+ *
+ * `draw` → preloader için: her çizgi pathLength=1 ile stroke-draw'a hazır.
+ */
+interface Props {
+  size?: number;
+  draw?: boolean;
+  class?: string;
+}
+
+const { size = 28, draw = false, class: className } = Astro.props;
+
+const rr = (x: number, y: number, w: number, h: number, r: number) =>
+  `M${x + r} ${y}H${x + w - r}A${r} ${r} 0 0 1 ${x + w} ${y + r}V${y + h - r}A${r} ${r} 0 0 1 ${x + w - r} ${y + h}H${x + r}A${r} ${r} 0 0 1 ${x} ${y + h - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`;
+
+const strokes = [rr(2, 2, 36, 36, 11), rr(9.5, 9.5, 8, 8, 2.4), rr(22.5, 9.5, 8, 8, 2.4), rr(9.5, 22.5, 8, 8, 2.4)];
+---
+
+<svg
+  class:list={['glyph', { 'glyph--draw': draw }, className]}
+  width={size}
+  height={size}
+  viewBox="0 0 40 40"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    strokes.map((d, i) => (
+      <path d={d} stroke="currentColor" stroke-width="2.2" pathLength={draw ? 1 : undefined} style={draw ? `--i:${i}` : undefined} />
+    ))
+  }
+  <circle class="glyph-dot" cx="26.5" cy="26.5" r="3.4" fill="var(--color-accent)" />
+</svg>

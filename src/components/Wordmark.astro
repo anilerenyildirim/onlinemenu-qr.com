@@ -1,0 +1,35 @@
+---
+import Glyph from './Glyph.astro';
+
+interface Props {
+  href?: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag href={href} class:list={['wordmark', className]} aria-label={href ? 'onlinemenu-qr — ana sayfa' : undefined}>
+  <Glyph size={26} />
+  <span class="wordmark-text">onlinemenu<span class="wordmark-qr">-qr</span></span>
+</Tag>
+
+<style>
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--color-text);
+  }
+  .wordmark-text {
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .wordmark-qr {
+    color: var(--color-accent);
+  }
+</style>

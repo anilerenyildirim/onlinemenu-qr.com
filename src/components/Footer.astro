@@ -1,0 +1,92 @@
+---
+import Wordmark from './Wordmark.astro';
+import { site, whatsappHref } from '../data/site';
+---
+
+<footer class="footer">
+  <div class="container-x">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <Wordmark />
+        <p class="footer-tag">QR menüden web sitesine, işletmenizin dijital vitrini.</p>
+      </div>
+
+      <ul role="list" class="footer-links">
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        {
+          site.phones.map((phone) => (
+            <li>
+              <a href={`tel:+${phone.e164}`}>{phone.display}</a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={whatsappHref} target="_blank" rel="noopener">WhatsApp<span class="sr-only"> (yeni sekmede açılır)</span></a>
+        </li>
+        <li><a href="/kvkk">KVKK Aydınlatma Metni</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-bottom">
+      <p>{site.legalName} · Şahıs Şirketi</p>
+      <p>
+        onlinemenu-qr, bir <a href={site.parent.url} target="_blank" rel="noopener">{site.parent.name}</a> altyapısı ürünüdür.
+      </p>
+      <p>© {site.copyrightYear} onlinemenu-qr. Tüm hakları saklıdır.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: 3.5rem 2.5rem;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.9375rem;
+  }
+  .footer-top {
+    display: grid;
+    gap: 2rem;
+  }
+  .footer-tag {
+    margin-top: 1rem;
+    max-width: 22rem;
+    color: var(--color-muted);
+  }
+  .footer-links {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+  .footer-links a,
+  .footer-bottom a {
+    color: var(--color-muted);
+    transition: color 0.25s ease;
+  }
+  .footer-links a:hover,
+  .footer-bottom a:hover {
+    color: var(--color-text);
+  }
+  .footer-bottom a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .footer-bottom {
+    display: grid;
+    gap: 0.375rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 768px) {
+    .footer-top {
+      grid-template-columns: 1fr auto;
+    }
+    .footer-links {
+      text-align: right;
+    }
+  }
+</style>

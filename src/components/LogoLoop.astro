@@ -1,0 +1,205 @@
+---
+/**
+ * LogoLoop — React Bits "LogoLoop" bileşeninden uyarlandı.
+ *
+ * Orijinal rAF + ResizeObserver + React state ile şeridi kaydırıyor. Burada:
+ *  - Diziler sunucuda N kopya basılır; kaydırma compositor'da çalışan CSS
+ *    animasyonu (ana thread'e yük yok, hydration yok).
+ *  - Hız px/sn olarak korunur: app.ts ilk dizinin genişliğini ölçüp
+ *    --loop-duration yazar. JS yoksa varsayılan süre kullanılır.
+ *  - Hover ve klavye odağında durur (orijinaldeki pauseOnHover).
+ *  - Kenar solması maske ile (orijinaldeki fadeOut).
+ *  - Kopyalar aria-hidden + tabindex=-1: ekran okuyucu/klavye her logoyu bir kez görür.
+ *  - Reduced motion: animasyon yok, tek dizi ortalanmış ve satır kırılabilir.
+ *
+ * Renk: tüm logolar varsayılan grayscale, hover/focus'ta kendi renklerine döner
+ * (filter geçişi SVG ve raster için aynı).
+ */
+import { Image } from 'astro:assets';
+import { clients } from '../data/clients';
+
+const COPIES = 4;
+const SPEED = 36; // px/sn
+
+const parseSvg = (raw: string) => ({
+  viewBox: raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100',
+  inner: raw.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, ''),
+});
+
+const items = clients.map((client, i) => {
+  const svg = typeof client.logo === 'string' ? parseSvg(client.logo) : null;
+  const [, , w = 1, h = 1] = (svg?.viewBox ?? '').split(/\s+/).map(Number);
+  return { ...client, svg, id: `client-logo-${i}`, ratio: svg ? w / h : null };
+});
+---
+
+<section class="clients" aria-labelledby="clients-title">
+  <div class="container-x">
+    <h2 id="clients-title" class="clients-title">Bizi tercih eden işletmeler</h2>
+  </div>
+
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      {
+        items.map(
+          (item) =>
+            item.svg && (
+              <symbol id={item.id} viewBox={item.svg.viewBox}>
+                <Fragment set:html={item.svg.inner} />
+              </symbol>
+            ),
+        )
+      }
+    </defs>
+  </svg>
+
+  <div class="loop" data-logoloop data-speed={SPEED} style={`--loop-copies:${COPIES}`}>
+    <div class="loop-track">
+      {
+        Array.from({ length: COPIES }, (_, copy) => (
+          <ul class="loop-seq" role="list" aria-hidden={copy > 0 ? 'true' : undefined}>
+            {items.map((item) => (
+              <li>
+                <a
+                  class="logo"
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={`${item.name} dijital menüsü`}
+                  tabindex={copy > 0 ? -1 : undefined}
+                  style={item.scale ? `--logo-scale:${item.scale}` : undefined}
+                >
+                  {item.svg ? (
+                    <svg class="logo-img" viewBox={item.svg.viewBox} style={`aspect-ratio:${item.ratio}`} role="img" aria-label={item.alt}>
+                      <use href={`#${item.id}`} />
+                    </svg>
+                  ) : (
+                    typeof item.logo !== 'string' && (
+                      <Image
+                        class="logo-img"
+                        src={item.logo}
+                        alt={item.alt}
+                        height={84}
+                        densities={[1, 2]}
+                        format="webp"
+                        loading="lazy"
+                        decoding="async"
+                        draggable="false"
+                      />
+                    )
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .clients {
+    padding-block: 3.5rem 4.5rem;
+    border-block: 1px solid var(--color-line);
+  }
+  .clients-title {
+    margin-bottom: 2.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.4;
+    color: var(--color-muted);
+  }
+
+  .sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .loop {
+    position: relative;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+    /* Sistem logolarının alt satırı siyah; koyu zeminde okunur olsun */
+    --logo-sub: var(--color-text);
+  }
+  .loop-track {
+    display: flex;
+    width: max-content;
+    animation: loop-scroll var(--loop-duration, 26s) linear infinite;
+  }
+  .loop:hover .loop-track,
+  .loop:focus-within .loop-track {
+    animation-play-state: paused;
+  }
+  @keyframes loop-scroll {
+    to {
+      translate: calc(-100% / var(--loop-copies)) 0;
+    }
+  }
+
+  .loop-seq {
+    display: flex;
+    align-items: center;
+    gap: var(--loop-gap);
+    padding-right: var(--loop-gap);
+    --loop-gap: 3.5rem;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    height: calc(3.5rem * var(--logo-scale, 1));
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    filter: grayscale(1) brightness(1.15);
+    opacity: 0.6;
+    transition:
+      filter 0.45s ease,
+      opacity 0.45s ease;
+  }
+  .logo:hover,
+  .logo:focus-visible {
+    filter: none;
+    opacity: 1;
+  }
+  .logo-img {
+    display: block;
+    height: 100%;
+    width: auto;
+    -webkit-user-drag: none;
+  }
+
+  @media (min-width: 768px) {
+    .loop-seq {
+      --loop-gap: 5.5rem;
+    }
+    .logo {
+      height: calc(4rem * var(--logo-scale, 1));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loop {
+      mask-image: none;
+    }
+    .loop-track {
+      animation: none;
+      width: auto;
+      justify-content: center;
+    }
+    .loop-seq {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-inline: 1.25rem;
+      row-gap: 1.5rem;
+    }
+    .loop-seq[aria-hidden] {
+      display: none;
+    }
+  }
+</style>

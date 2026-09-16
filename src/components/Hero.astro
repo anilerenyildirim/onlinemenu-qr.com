@@ -1,0 +1,129 @@
+---
+/**
+ * Hero — tek hareket kaynağı BlurText (bir kez). Aurora çok yavaş ve düşük
+ * opaklıkta, "ortam ışığı" rolünde; dikkat çeken animasyon sayılmaz.
+ *
+ * Aurora island yalnız geniş + ince işaretçili + hareket izinli ekranda yüklenir
+ * (client:media). Mobilde React/WebGL indirilmez; statik gradyan kalır.
+ */
+import BlurText from './BlurText.astro';
+import Aurora from './islands/Aurora';
+import { site } from '../data/site';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true">
+    <Aurora
+      client:media="(min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference)"
+      className="hero-aurora"
+      colorStops={['#3E5A2A', '#CFE38A', '#6B7F3A']}
+      amplitude={0.9}
+      blend={0.6}
+      speed={0.35}
+    />
+  </div>
+
+  <div class="container-x hero-content">
+    <BlurText tag="h1" class="hero-title" text="İşletmenizin dijital vitrini, her an güncel." />
+
+    <p class="hero-lede" data-hero-fade>
+      Masadaki QR menüden Google yorumlarınıza ve Instagram'ınıza yönlendiren NFC kartlara, oradan web sitenize kadar. Tasarım bir kalıba değil, işletmenize göre şekillenir.
+    </p>
+
+    <div class="hero-cta" data-hero-fade>
+      <span data-magnet><a href="#iletisim" class="btn btn-primary">Teklif Al</a></span>
+      <a href={site.sampleMenuUrl} class="btn btn-ghost" target="_blank" rel="noopener">
+        Örnek Menü
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M4 10 10 4M5 4h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+        <span class="sr-only">(yeni sekmede açılır)</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - 4.25rem);
+    padding-block: 4rem 5rem;
+    margin-top: -4.25rem;
+    padding-top: calc(4.25rem + 3rem);
+    overflow: hidden;
+  }
+
+  /* Statik gradyan: her cihazda var; Aurora üzerine biner. */
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 55% at 78% 8%, rgb(207 227 138 / 0.13), transparent 70%),
+      radial-gradient(45% 40% at 12% 0%, rgb(107 127 58 / 0.16), transparent 70%),
+      var(--color-bg);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  }
+  .hero-bg :global(.hero-aurora) {
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-content :global(.hero-title) {
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 5.8vw, 4.75rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+
+  .hero-lede {
+    margin-top: 1.75rem;
+    max-width: 38rem;
+    font-size: clamp(1.0625rem, 1.6vw, 1.25rem);
+    color: var(--color-muted);
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+  [data-magnet] {
+    display: inline-block;
+  }
+
+  /* Alt metin ve CTA'lar başlık bittikten sonra sessizce belirir */
+  :global(html.js) [data-hero-fade] {
+    opacity: 0;
+    translate: 0 8px;
+  }
+  :global(html.js.is-ready) [data-hero-fade] {
+    transition:
+      opacity 0.8s var(--ease-out-soft) 0.55s,
+      translate 0.8s var(--ease-out-soft) 0.55s;
+    opacity: 1;
+    translate: 0 0;
+  }
+  :global(html.js.is-ready) .hero-cta[data-hero-fade] {
+    transition-delay: 0.7s;
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      margin-top: -4.75rem;
+      padding-top: calc(4.75rem + 4rem);
+      min-height: min(100svh, 56rem);
+    }
+  }
+</style>

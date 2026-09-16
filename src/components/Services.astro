@@ -1,0 +1,196 @@
+---
+/**
+ * Hizmetler — QR ve NFC fotoğraflı ana bloklar olarak öne çıkar; web sitesi ve
+ * çoklu dil altta tamamlayıcı kartlar.
+ */
+import { Picture } from 'astro:assets';
+import SpotlightCard from './SpotlightCard.astro';
+import { showcase, services } from '../data/services';
+import { site } from '../data/site';
+---
+
+<section id="hizmetler" class="section" aria-labelledby="hizmetler-title">
+  <div class="container-x">
+    <header class="head" data-reveal>
+      <h2 id="hizmetler-title" class="section-title">Masada QR ve NFC, internette web sitesi.</h2>
+      <p class="section-lede">Misafirin telefonuyla menünüze, yorum sayfanıza ve sitenize ulaştığı her noktayı biz tasarlayıp kuruyoruz.</p>
+    </header>
+
+    {
+      showcase.map((item, i) => (
+        <article class:list={['feature', { 'feature--flip': i % 2 === 1 }]} aria-labelledby={`${item.id}-title`}>
+          <div class="feature-media" data-reveal>
+            {item.media.map((media) => (
+              <figure class="shot">
+                <div
+                  class="shot-frame"
+                  style={`--focus:${media.focus ?? '50% 50%'};--zoom:${media.zoom ?? 1};--ratio:${media.ratio ?? '4 / 5'}`}
+                >
+                  <Picture
+                    src={media.image}
+                    alt={media.alt}
+                    formats={['avif', 'webp']}
+                    widths={[480, 800, 1200]}
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <figcaption>{media.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+
+          <div class="feature-text" data-reveal style="--reveal-delay:80ms">
+            <h3 id={`${item.id}-title`} class="feature-title">
+              {item.title}
+            </h3>
+            <p class="feature-body">{item.body}</p>
+            {item.id === 'qr-menu' && (
+              <a class="feature-link" href={site.sampleMenuUrl} target="_blank" rel="noopener">
+                Canlı menüyü açın<span class="sr-only"> (yeni sekmede açılır)</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M4 10 10 4M5 4h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            )}
+          </div>
+        </article>
+      ))
+    }
+
+    <ul class="extras" role="list">
+      {
+        services.map((service, i) => (
+          <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+            <SpotlightCard class="extra-card">
+              <h3 class="extra-title">{service.title}</h3>
+              <p class="extra-body">{service.body}</p>
+            </SpotlightCard>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: 5.5rem;
+  }
+  .head {
+    max-width: 52rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .feature {
+    display: grid;
+    gap: 2rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .feature-media {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .shot {
+    margin: 0;
+  }
+  .shot-frame {
+    position: relative;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    border-radius: 0.875rem;
+    background: var(--color-surface);
+  }
+  .shot-frame :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focus);
+    transform: scale(var(--zoom));
+    transform-origin: var(--focus);
+  }
+  figcaption {
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+  }
+
+  .feature-title {
+    font-size: clamp(1.875rem, 4vw, 2.875rem);
+  }
+  .feature-body {
+    margin-top: 1.125rem;
+    max-width: 32rem;
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+  }
+  .feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color-line-strong);
+    font-weight: 600;
+    transition: border-color 0.25s ease;
+  }
+  .feature-link:hover {
+    border-color: var(--color-text);
+  }
+
+  .extras {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .extras > li {
+    display: flex;
+  }
+  .extras :global(.extra-card) {
+    width: 100%;
+    padding: 1.75rem;
+  }
+  .extra-title {
+    font-size: 1.5rem;
+  }
+  .extra-body {
+    margin-top: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding-block: 8rem;
+    }
+    .extras {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .extras :global(.extra-card) {
+      padding: 2.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .feature {
+      grid-template-columns: 11fr 10fr;
+      align-items: center;
+      gap: 5rem;
+      padding-block: 4rem;
+    }
+    .feature--flip {
+      grid-template-columns: 9fr 13fr;
+    }
+    .feature--flip .feature-media {
+      order: 2;
+    }
+    .feature:not(.feature--flip) .feature-media {
+      max-width: 34rem;
+    }
+  }
+</style>

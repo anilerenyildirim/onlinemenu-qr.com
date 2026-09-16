@@ -1,0 +1,74 @@
+---
+import { steps } from '../data/services';
+---
+
+<section id="nasil-calisir" class="how" aria-labelledby="nasil-title">
+  <div class="container-x">
+    <div class="how-head" data-reveal>
+      <h2 id="nasil-title" class="section-title">Nasıl çalışıyoruz</h2>
+    </div>
+
+    <ol class="steps" role="list">
+      {
+        steps.map((step, i) => (
+          <li class="step" data-reveal style={`--reveal-delay:${i * 90}ms`}>
+            <span class="step-num" aria-hidden="true">
+              {i + 1}
+            </span>
+            <h3 class="step-title">{step.title}</h3>
+            <p class="step-body">{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .how {
+    padding-block: 5.5rem;
+    background: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+  .how-head {
+    margin-bottom: 3rem;
+  }
+
+  .steps {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .step {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-strong);
+  }
+  .step-num {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-muted);
+  }
+  .step-title {
+    margin-top: 0.75rem;
+    font-size: 1.625rem;
+  }
+  .step-body {
+    margin-top: 0.75rem;
+    color: var(--color-muted);
+    max-width: 22rem;
+  }
+
+  @media (min-width: 768px) {
+    .how {
+      padding-block: 8rem;
+    }
+    .how-head {
+      margin-bottom: 4.5rem;
+    }
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+</style>

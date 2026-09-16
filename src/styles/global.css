@@ -1,0 +1,179 @@
+@import 'tailwindcss';
+
+/* ============================================================
+   onlinemenu-qr — token katmanı
+
+   Palet B "Gece": sıcak near-black zemin, tek vurgu (soluk fıstık).
+   Vurgu rengi YALNIZCA: birincil CTA, logo noktası, odak halkası.
+   Başlıklarda renkli/italik "vurgu kelimesi" YOK — şablon site imzası.
+
+   Kontrast (zemin #0C0C0A üzerinde):
+     text   #ECEBE6 ≈ 16.6:1
+     muted  #9C9B93 ≈  6.9:1
+     accent #CFE38A ≈ 14.4:1
+
+   Tipografi: TEK AİLE — Hanken Grotesk (kullanıcı seçimi).
+     Başlık: 500, sıkı harf aralığı; ölçülü boyut.
+     Gövde : 400, normal genişlik.
+   Serif, dar (condensed) yüz ve italik "vurgu kelimesi" kullanılmaz.
+   ============================================================ */
+
+@theme {
+  --color-bg: #0c0c0a;
+  --color-surface: #151513;
+  --color-surface-2: #1c1c19;
+  --color-line: #262622;
+  --color-line-strong: #34342f;
+  --color-text: #ecebe6;
+  --color-muted: #9c9b93;
+  --color-accent: #cfe38a;
+  --color-accent-ink: #141a05;
+
+  --font-display: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Hanken Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-text);
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    /* sticky header anchor'ları örtmesin */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-x {
+      padding-inline: 2rem;
+    }
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4.2vw, 3.375rem);
+  }
+  .section-lede {
+    margin-top: 1.25rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0 1.375rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    white-space: nowrap;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+  .btn-primary:hover {
+    background: color-mix(in oklab, var(--color-accent) 85%, white);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-text);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-muted);
+    background: var(--color-surface);
+  }
+  .btn-sm {
+    min-height: 2.5rem;
+    padding: 0 1.125rem;
+    font-size: 0.875rem;
+  }
+
+  /* Scroll'da tek seferlik yumuşak giriş (reveal.ts). JS yoksa hiç gizlenmez. */
+  :where(html.js) [data-reveal] {
+    opacity: 0;
+    translate: 0 14px;
+    transition:
+      opacity 0.8s var(--ease-out-soft),
+      translate 0.8s var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  :where(html.js) [data-reveal].is-in {
+    opacity: 1;
+    translate: 0 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :where(html.js) [data-reveal] {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}

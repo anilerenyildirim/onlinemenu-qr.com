@@ -1,0 +1,82 @@
+---
+import Wordmark from './Wordmark.astro';
+
+const links = [
+  { href: '#hizmetler', label: 'Hizmetler' },
+  { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
+  { href: '#iletisim', label: 'İletişim' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container-x header-row">
+    <Wordmark href="/" />
+
+    <nav aria-label="Sayfa içi" class="header-nav">
+      <ul role="list">
+        {
+          links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a href="#iletisim" class="btn btn-primary btn-sm">Teklif Al</a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      backdrop-filter 0.35s ease;
+  }
+  .site-header[data-scrolled] {
+    background: color-mix(in oklab, var(--color-bg) 72%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom-color: var(--color-line);
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4.25rem;
+  }
+
+  .header-nav {
+    display: none;
+  }
+  .header-nav ul {
+    display: flex;
+    gap: 2.25rem;
+  }
+  .header-nav a {
+    position: relative;
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+    transition: color 0.25s ease;
+  }
+  .header-nav a:hover {
+    color: var(--color-text);
+  }
+
+  @media (min-width: 768px) {
+    .header-nav {
+      display: block;
+    }
+    .header-row {
+      height: 4.75rem;
+    }
+  }
+</style>

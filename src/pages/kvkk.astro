@@ -1,0 +1,107 @@
+---
+/**
+ * KVKK Aydınlatma Metni — İSKELET.
+ *
+ * Hukuki metin UYDURULMADI. Başlıklar 6698 sayılı Kanun md. 10'daki aydınlatma
+ * yükümlülüğü kalemlerini izler; içerikler hukukçu tarafından doldurulmalı.
+ * Yalnızca teknik olarak doğrulanabilen bilgiler (formda toplanan alanlar,
+ * kullanılan altyapı hizmetleri) yazıldı.
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+// TEYİT: Tüm "[TEYİT]" alanları hukukçu onayıyla doldurulacak.
+const TODO = '[TEYİT: Hukukçu tarafından doldurulacak]';
+---
+
+<Base title="KVKK Aydınlatma Metni — onlinemenu-qr" description="onlinemenu-qr kişisel verilerin korunması aydınlatma metni.">
+  <Header />
+  <main id="icerik" class="container-x legal">
+    <h1>KVKK Aydınlatma Metni</h1>
+    <p class="draft" role="note">Bu metin taslaktır; yayın öncesi hukuki onaydan geçecektir.</p>
+
+    <h2>1. Veri sorumlusu</h2>
+    <p>{site.legalName} (şahıs şirketi) — onlinemenu-qr</p>
+    <p>Adres: <span class="todo">{TODO}</span></p>
+    <p>E-posta: <a href={`mailto:${site.email}`}>{site.email}</a></p>
+
+    <h2>2. İşlenen kişisel veriler</h2>
+    <p>İletişim formu aracılığıyla aşağıdaki veriler alınır:</p>
+    <ul>
+      <li>Ad soyad</li>
+      <li>İşletme adı</li>
+      <li>Telefon numarası</li>
+      <li>E-posta adresi (isteğe bağlı)</li>
+      <li>İlgilenilen hizmetler ve mesaj içeriği</li>
+      <li>Kötüye kullanımı önleme amacıyla IP adresinden türetilen teknik kayıt</li>
+    </ul>
+
+    <h2>3. İşleme amaçları</h2>
+    <p class="todo">{TODO}</p>
+
+    <h2>4. Hukuki sebep</h2>
+    <p class="todo">{TODO}</p>
+
+    <h2>5. Aktarım</h2>
+    <p>Form verileri aşağıdaki altyapı hizmetleri kullanılarak saklanır ve iletilir:</p>
+    <ul>
+      <li>Cloudflare (barındırma, veritabanı, bot koruması)</li>
+      <li>Resend (bildirim e-postası)</li>
+    </ul>
+    <p class="todo">Yurt dışına aktarım dayanağı: {TODO}</p>
+
+    <h2>6. Saklama süresi</h2>
+    <p class="todo">{TODO}</p>
+
+    <h2>7. İlgili kişinin hakları</h2>
+    <p class="todo">{TODO}</p>
+
+    <h2>8. Başvuru</h2>
+    <p class="todo">{TODO}</p>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .legal {
+    max-width: 46rem;
+    padding-block: 4rem 6rem;
+  }
+  h1 {
+    margin-top: 1rem;
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+  }
+  h2 {
+    margin-top: 2.75rem;
+    font-size: 1.625rem;
+  }
+  p,
+  ul {
+    margin-top: 0.875rem;
+    color: var(--color-muted);
+  }
+  ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  a {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .draft {
+    margin-top: 1.5rem;
+    padding: 0.875rem 1rem;
+    border: 1px dashed var(--color-line-strong);
+    border-radius: 0.75rem;
+  }
+  .todo {
+    color: var(--color-accent);
+  }
+</style>
+
+<script>
+  import '../scripts/app';
+</script>

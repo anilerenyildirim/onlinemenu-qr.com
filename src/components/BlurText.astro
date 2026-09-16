@@ -1,0 +1,72 @@
+---
+/**
+ * BlurText — React Bits "BlurText" bileşeninden uyarlandı.
+ *
+ * `motion` bağımlılığı ve hydration yok: kelimeler sunucuda <span>'lara bölünür,
+ * animasyon saf CSS keyframe (orijinaldeki 3 adımlı from → yarı → net
+ * dizisi ve kelime başına gecikme korunuyor).
+ *
+ * Başlatma: html.is-ready (preloader bitince veya intro yoksa ilk karede).
+ * JS kapalı → html.js yok → metin doğrudan net ve görünür.
+ * Reduced motion → global kural süreyi ~0'a indirir, metin statik.
+ *
+ * Başlangıç opaklığı 0 DEĞİL: Chrome opacity:0 öğeyi LCP adayı saymaz;
+ * bulanık + çok düşük opaklık ilk karede LCP'yi kaydettirir.
+ */
+interface Props {
+  tag?: 'h1' | 'h2' | 'p';
+  text: string;
+  /** Kelimeler arası gecikme (ms) */
+  delay?: number;
+  class?: string;
+}
+
+const { tag: Tag = 'h1', text, delay = 90, class: className } = Astro.props;
+
+const words = text.split(/\s+/).filter(Boolean);
+---
+
+<Tag class:list={['blur-text', className]} style={`--bt-step:${delay}ms`}>
+  {
+    words.map((word, i) => (
+      <>
+        <span class="bt-word" style={`--i:${i}`}>
+          {word}
+        </span>{' '}
+      </>
+    ))
+  }
+</Tag>
+
+<style>
+  .bt-word {
+    display: inline-block;
+  }
+  :global(html.js) .bt-word {
+    opacity: 0.02;
+    filter: blur(10px);
+    translate: 0 -0.3em;
+  }
+  :global(html.js.is-ready) .bt-word {
+    animation: bt-in 0.7s linear both;
+    animation-delay: calc(var(--i) * var(--bt-step));
+  }
+
+  @keyframes bt-in {
+    0% {
+      opacity: 0.02;
+      filter: blur(10px);
+      translate: 0 -0.3em;
+    }
+    50% {
+      opacity: 0.5;
+      filter: blur(5px);
+      translate: 0 0.04em;
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+      translate: 0 0;
+    }
+  }
+</style>
