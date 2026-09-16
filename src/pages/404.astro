@@ -1,0 +1,51 @@
+---
+/**
+ * 404 — Cloudflare Pages, kökte 404.html varsa bilinmeyen adreslere gerçek 404
+ * durumu döner. Bu dosya olmadan Pages her adrese ana sayfayı 200 ile verir
+ * (soft 404 → arama motorunda kopya içerik).
+ */
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { servicePages } from '../data/pages';
+---
+
+<Base title="Sayfa bulunamadı | onlinemenu-qr" description="Aradığınız sayfa bulunamadı." noindex>
+  <Header />
+  <main id="icerik" class="container-x notfound">
+    <h1>Sayfa bulunamadı</h1>
+    <p>Aradığınız sayfa taşınmış veya kaldırılmış olabilir.</p>
+    <ul role="list">
+      <li><a href="/" class="btn btn-primary">Ana sayfaya dön</a></li>
+      {
+        servicePages.map((page) => (
+          <li>
+            <a href={page.path} class="btn btn-ghost">
+              {page.breadcrumb}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .notfound {
+    padding-block: 6rem 8rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+  }
+  p {
+    margin-top: 1rem;
+    color: var(--color-muted);
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+</style>
