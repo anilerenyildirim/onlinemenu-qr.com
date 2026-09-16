@@ -74,7 +74,6 @@ export const qrMenuPage: ServicePage = {
       paragraphs: [
         'Basılı menülerde her fiyat değişikliği yeni bir baskı maliyeti ve bekleme süresi anlamına gelir. Dijital QR menüde değişiklikler yönetim panelinden birkaç dakika içinde yapılır ve kaydedildiği anda misafirin ekranına yansır.',
       ],
-      // TEYİT: Panel yetenek listesi panel.onlinemenu-qr.com ile karşılaştırılmalı.
       list: [
         'Ürün ekleme, düzenleme ve kaldırma',
         'Fiyat güncelleme',

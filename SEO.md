@@ -61,6 +61,5 @@ Tek sayfalık yeni bir sitenin öne çıkmasını en çok bunlar belirler.
 ## 5. TEYİT
 
 - Hizmet bölgesi: şimdilik Türkiye geneli (`src/lib/schema.ts` → `areaServed`).
-- `/qr-menu/` sayfasındaki yönetim paneli yetenek listesi (`src/data/pages.ts` içinde işaretli) — panel ekibinin dönüşü bekleniyor.
 - Instagram / Google İşletme Profili bağlantıları (`sameAs` boş).
 - Açık adres: yok. Bu yüzden `LocalBusiness` yerine `Organization` kullanıldı.
