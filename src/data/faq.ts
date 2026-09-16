@@ -1,3 +1,5 @@
+import { site } from './site';
+
 export interface Faq {
   q: string;
   a: string;
@@ -28,6 +30,10 @@ export const homeFaq: Faq[] = [
   {
     q: 'Menü tasarımında logomuz ve kurumsal renklerimiz kullanılır mı?',
     a: 'Evet. Tasarım hazır bir şablondan değil, işletmenizin logosu, renkleri ve tarzı esas alınarak hazırlanır.',
+  },
+  {
+    q: 'Hangi bölgelerde hizmet veriyorsunuz?',
+    a: `${site.serviceArea.short} ${site.serviceArea.europe}`,
   },
   {
     q: 'Kurulum ne kadar sürer?',

@@ -31,6 +31,13 @@ export const site = {
   /** Şahıs şirketi — unvan kullanıcı tarafından verildi. */
   legalName: 'Anıl Eren YILDIRIM',
 
+  /** Hizmet bölgesi ve Avrupa şartları — SSS, hizmet sayfası ve footer buradan okur. */
+  serviceArea: {
+    short: "Türkiye'nin tüm illerinde ve Avrupa'da hizmet veriyoruz.",
+    europe:
+      "Avrupa'daki işletmeler için dijital QR menü, web sitesi ve çoklu dil hizmetleri uzaktan kurulur. Avrupa'da baskı hizmeti verilmez. Fotoğraflı menü isteniyorsa ürün fotoğraflarının işletme tarafından sağlanması gerekir.",
+  },
+
   sampleMenuUrl: 'https://cafe-leo.onlinemenu-qr.com',
   parent: { name: 'ORDER', url: 'https://cabukrandevu.com' },
   copyrightYear: 2026,

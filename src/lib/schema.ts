@@ -8,8 +8,11 @@ import type { Faq } from '../data/faq';
 export const ORG_ID = `${site.url}/#organization`;
 export const WEBSITE_ID = `${site.url}/#website`;
 
-// TEYİT: Hizmet verilen bölge — şimdilik Türkiye geneli. Yalnız belli şehirler ise daraltılmalı.
-export const areaServed = { '@type': 'Country', name: 'Türkiye' } as const;
+/** Hizmet bölgesi: Türkiye'nin tüm illeri + Avrupa (Avrupa'da baskı yok, bkz. data/site.ts). */
+export const areaServed = [
+  { '@type': 'Country', name: 'Türkiye' },
+  { '@type': 'Continent', name: 'Avrupa' },
+] as const;
 
 export const abs = (path: string) => new URL(path, site.url).href;
 

@@ -130,7 +130,9 @@ function initContactForm() {
   const status = document.querySelector<HTMLElement>('[data-form-status]');
   if (!form || !status) return;
 
-  const TR_PHONE = /^(?:\+?90|0)?5\d{9}$|^(?:\+?90|0)?[2-4]\d{9}$/;
+  // Türkiye: 05xx / 0212 … (başında 0, 90 veya +90 olabilir). Yurt dışı: + veya 00 ile ülke kodu, 8–15 hane.
+  const TR_PHONE = /^(?:\+?90|0)?[2-5]\d{9}$/;
+  const INTL_PHONE = /^(?:\+|00)(?!90)[1-9]\d{7,14}$/;
   const phone = form.elements.namedItem('phone') as HTMLInputElement;
   const waNumber = form.dataset.wa;
 
@@ -149,7 +151,8 @@ function initContactForm() {
     e.preventDefault();
 
     const digits = phone.value.replace(/[\s()-]/g, '');
-    phone.setCustomValidity(digits && !TR_PHONE.test(digits) ? 'Geçerli bir Türkiye telefon numarası girin (örn. 0532 123 45 67).' : '');
+    const phoneOk = TR_PHONE.test(digits) || INTL_PHONE.test(digits);
+    phone.setCustomValidity(digits && !phoneOk ? 'Geçerli bir telefon numarası girin (örn. 0532 123 45 67 veya +49 151 2345 6789).' : '');
 
     if (!form.checkValidity()) {
       form.querySelectorAll<HTMLInputElement>('input, textarea').forEach((el) => {

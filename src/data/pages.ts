@@ -8,6 +8,7 @@
 import type { ShowcaseMedia } from './services';
 import { showcase } from './services';
 import type { Faq } from './faq';
+import { site } from './site';
 
 export type Block =
   | { kind: 'text'; id: string; title: string; paragraphs: string[]; list?: string[] }
@@ -134,6 +135,19 @@ export const qrMenuPage: ServicePage = {
       list: ['Kafeler ve kahve dükkânları', 'Restoranlar', 'Pastane ve fırınlar', 'Lounge ve barlar', 'Birden fazla mekânı veya şubesi olan işletmeler'],
     },
     {
+      kind: 'text',
+      id: 'hizmet-bolgesi',
+      title: "Türkiye ve Avrupa'da QR menü",
+      paragraphs: [
+        "Dijital QR menü hizmetimizi Türkiye'nin tüm illerindeki işletmelere sunuyoruz. Kurulum ve güncellemeler uzaktan yapıldığı için işletmenizin bulunduğu şehir süreci etkilemez.",
+        "Avrupa'daki kafe ve restoranlara da dijital QR menü, işletme web sitesi ve Türkçe, İngilizce, Arapça dil desteği sunuyoruz. Avrupa'daki işletmeler için şartlar farklıdır:",
+      ],
+      list: [
+        'Masa standı ve QR kod baskısı yapılmaz; QR kodun baskısı işletme tarafından yaptırılır.',
+        'Fotoğraflı menü isteniyorsa ürün fotoğraflarının işletme tarafından sağlanması gerekir.',
+      ],
+    },
+    {
       kind: 'clients',
       id: 'ornek-menuler',
       title: 'Canlı örnek menüler',
@@ -156,6 +170,10 @@ export const qrMenuPage: ServicePage = {
     {
       q: 'Birden fazla şubem var, her şube için ayrı menü olabilir mi?',
       a: 'Evet. Şube menüsü desteklenir; her şube kendi menüsüyle yayınlanır ve misafir, bulunduğu şubenin menüsünü görür. Aynı işletmenin farklı bölümleri için de ayrı menüler hazırlanabilir.',
+    },
+    {
+      q: "Avrupa'daki işletmemiz için QR menü hazırlıyor musunuz?",
+      a: site.serviceArea.europe,
     },
     {
       q: 'QR menü fiyatı ne kadar?',
