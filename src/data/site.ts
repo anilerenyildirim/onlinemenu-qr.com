@@ -34,8 +34,10 @@ export const site = {
   /** Hizmet bölgesi ve Avrupa şartları — SSS, hizmet sayfası ve footer buradan okur. */
   serviceArea: {
     short: "Türkiye'nin tüm illerinde ve Avrupa'da hizmet veriyoruz.",
+    /** NFC / QR stantları fiziksel üretim — yalnız Türkiye. */
+    stands: "NFC ve QR stantlar yalnızca Türkiye'deki işletmeler için hazırlanır.",
     europe:
-      "Avrupa'daki işletmeler için dijital QR menü, web sitesi ve çoklu dil hizmetleri uzaktan kurulur. Avrupa'da baskı hizmeti verilmez. Fotoğraflı menü isteniyorsa ürün fotoğraflarının işletme tarafından sağlanması gerekir.",
+      "Avrupa'daki işletmeler için dijital QR menü, web sitesi ve çoklu dil hizmetleri uzaktan kurulur. Avrupa'da baskı hizmeti verilmez ve NFC stant hazırlanmaz. Fotoğraflı menü isteniyorsa ürün fotoğraflarının işletme tarafından sağlanması gerekir.",
   },
 
   sampleMenuUrl: 'https://cafe-leo.onlinemenu-qr.com',

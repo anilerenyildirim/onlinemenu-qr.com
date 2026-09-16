@@ -143,7 +143,7 @@ export const qrMenuPage: ServicePage = {
         "Avrupa'daki kafe ve restoranlara da dijital QR menü, işletme web sitesi ve Türkçe, İngilizce, Arapça dil desteği sunuyoruz. Avrupa'daki işletmeler için şartlar farklıdır:",
       ],
       list: [
-        'Masa standı ve QR kod baskısı yapılmaz; QR kodun baskısı işletme tarafından yaptırılır.',
+        'Masa standı, NFC stant ve QR kod baskısı yapılmaz; QR kodun baskısı işletme tarafından yaptırılır.',
         'Fotoğraflı menü isteniyorsa ürün fotoğraflarının işletme tarafından sağlanması gerekir.',
       ],
     },
@@ -269,6 +269,15 @@ export const nfcPage: ServicePage = {
       paragraphs: ['Stantlar, misafirin memnuniyetini dile getirmeye en yakın olduğu noktalara yerleştirildiğinde en iyi sonucu verir.'],
       list: ['Masalar', 'Kasa ve ödeme noktası', 'Tezgâh ve bar alanı', 'Giriş ve bekleme alanı'],
     },
+    {
+      kind: 'text',
+      id: 'hizmet-bolgesi',
+      title: 'Hizmet bölgesi',
+      paragraphs: [
+        `${site.serviceArea.stands} Türkiye'nin tüm illerindeki işletmeler stant talebinde bulunabilir.`,
+        "Avrupa'daki işletmeler için NFC stant hazırlanmaz; bu işletmelere dijital QR menü, web sitesi ve çoklu dil hizmetleri sunulur.",
+      ],
+    },
   ],
   faq: [
     {
@@ -286,6 +295,10 @@ export const nfcPage: ServicePage = {
     {
       q: 'Standın yönlendirdiği adres sonradan değiştirilebilir mi?',
       a: 'Hayır. Güvenlik gereği NFC etiketi ve QR kod üretim sırasında tek bir adrese sabitlenir ve sonradan değiştirilemez. Bu nedenle yönlendirilecek Google yorum sayfası, Instagram hesabı veya diğer adresler sipariş aşamasında birlikte netleştirilir. Farklı bir adres için ayrı stant hazırlanır.',
+    },
+    {
+      q: "Avrupa'daki işletmeler için NFC stant hazırlıyor musunuz?",
+      a: `Hayır. ${site.serviceArea.stands} Avrupa'daki işletmelere dijital QR menü, web sitesi ve çoklu dil hizmetleri sunuyoruz.`,
     },
     {
       q: 'NFC standı fiyatı ne kadar?',

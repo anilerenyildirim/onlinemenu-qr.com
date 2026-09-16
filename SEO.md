@@ -54,6 +54,14 @@ Tek sayfalık yeni bir sitenin öne çıkmasını en çok bunlar belirler.
 
 ## 4. Sıradaki öneriler
 
+- **PLANLANDI — ŞİMDİ YAPILMAYACAK: Site Türkçe + İngilizce olacak.** Avrupa'daki işletmelere ulaşmak için. Yapılırken:
+  - URL yapısı: Türkçe kökte kalır (`/`, `/qr-menu/`), İngilizce `/en/` altında (`/en/`, `/en/qr-menu/`, `/en/nfc-google-review-stand/`).
+  - Her sayfada `hreflang="tr"`, `hreflang="en"` ve `x-default` karşılıklı bağlantıları; sitemap'te alternatifler.
+  - İçerik verisi (`src/data/*.ts`) dile göre ayrılır; JSON-LD `inLanguage` sayfa diline göre.
+  - İngilizce metinler çeviri değil, İngilizce arama niyetine göre yazılır ("QR code menu", "NFC Google review stand").
+  - Avrupa şartları İngilizce sayfalarda da açıkça yer alır (baskı ve NFC stant yok, fotoğraflı menü için ürün fotoğrafları işletmeden).
+  - Header'a dil seçici.
+
 - **Web sitesi hizmet sayfası** (`/restoran-web-sitesi/`): Aynı `ServicePage` layout'uyla, yalnızca içerik verisi eklenerek yapılır.
 - **Font subsetting** (aşama 4): Mobil hız, sıralama sinyallerinden biri.
 - **Müşteri vaka içerikleri:** Her müşteri için kısa bir anlatım. Gerçek işler en güçlü içerik türüdür.
