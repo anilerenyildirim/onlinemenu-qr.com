@@ -1,7 +1,12 @@
 ---
 import Wordmark from './Wordmark.astro';
-import { site, whatsappHref } from '../data/site';
+import { site, siteCopy, whatsappHref } from '../data/site';
 import { servicePages } from '../data/pages';
+import { langOf, t } from '../i18n';
+
+const lang = langOf(Astro.url);
+const ui = t(lang);
+const parentLink = `<a href="${site.parent.url}" target="_blank" rel="noopener">${site.parent.name}</a>`;
 ---
 
 <footer class="footer">
@@ -9,12 +14,12 @@ import { servicePages } from '../data/pages';
     <div class="footer-top">
       <div class="footer-brand">
         <Wordmark />
-        <p class="footer-tag">QR menüden web sitesine, işletmenizin dijital vitrini. {site.serviceArea.short}</p>
+        <p class="footer-tag">{ui.footer.tag} {siteCopy[lang].serviceArea.short}</p>
       </div>
 
       <ul role="list" class="footer-links">
         {
-          servicePages.map((page) => (
+          servicePages[lang].map((page) => (
             <li>
               <a href={page.path}>{page.breadcrumb}</a>
             </li>
@@ -29,18 +34,16 @@ import { servicePages } from '../data/pages';
           ))
         }
         <li>
-          <a href={whatsappHref} target="_blank" rel="noopener">WhatsApp<span class="sr-only"> (yeni sekmede açılır)</span></a>
+          <a href={whatsappHref(lang)} target="_blank" rel="noopener">WhatsApp<span class="sr-only"> {ui.newTab}</span></a>
         </li>
-        <li><a href="/kvkk/">KVKK Aydınlatma Metni</a></li>
+        <li><a href="/kvkk/" hreflang="tr">{ui.footer.kvkk}</a></li>
       </ul>
     </div>
 
     <div class="footer-bottom">
-      <p>{site.legalName} · Şahıs Şirketi</p>
-      <p>
-        onlinemenu-qr, bir <a href={site.parent.url} target="_blank" rel="noopener">{site.parent.name}</a> altyapısı ürünüdür.
-      </p>
-      <p>© {site.copyrightYear} onlinemenu-qr. Tüm hakları saklıdır.</p>
+      <p>{site.legalName} · {ui.footer.legalForm}</p>
+      <p set:html={ui.footer.parent(parentLink)} />
+      <p>© {site.copyrightYear} onlinemenu-qr. {ui.footer.rights}</p>
     </div>
   </div>
 </footer>

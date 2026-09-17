@@ -1,16 +1,20 @@
 ---
 import { steps } from '../data/services';
+import { langOf, t } from '../i18n';
+
+const lang = langOf(Astro.url);
+const ui = t(lang);
 ---
 
-<section id="nasil-calisir" class="how" aria-labelledby="nasil-title">
+<section id={ui.anchors.how} class="how" aria-labelledby="nasil-title">
   <div class="container-x">
     <div class="how-head" data-reveal>
-      <h2 id="nasil-title" class="section-title">Nasıl çalışıyoruz</h2>
+      <h2 id="nasil-title" class="section-title">{ui.how.title}</h2>
     </div>
 
     <ol class="steps" role="list">
       {
-        steps.map((step, i) => (
+        steps[lang].map((step, i) => (
           <li class="step" data-reveal style={`--reveal-delay:${i * 90}ms`}>
             <span class="step-num" aria-hidden="true">
               {i + 1}

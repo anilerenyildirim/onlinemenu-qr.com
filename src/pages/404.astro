@@ -15,10 +15,11 @@ import { servicePages } from '../data/pages';
   <main id="icerik" class="container-x notfound">
     <h1>Sayfa bulunamadı</h1>
     <p>Aradığınız sayfa taşınmış veya kaldırılmış olabilir.</p>
+    <p lang="en">Page not found. <a href="/en/" class="en-link">Go to the English homepage</a></p>
     <ul role="list">
       <li><a href="/" class="btn btn-primary">Ana sayfaya dön</a></li>
       {
-        servicePages.map((page) => (
+        servicePages.tr.map((page) => (
           <li>
             <a href={page.path} class="btn btn-ghost">
               {page.breadcrumb}
@@ -41,6 +42,11 @@ import { servicePages } from '../data/pages';
   p {
     margin-top: 1rem;
     color: var(--color-muted);
+  }
+  .en-link {
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
   ul {
     display: flex;

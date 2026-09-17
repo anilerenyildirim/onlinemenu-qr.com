@@ -14,12 +14,17 @@ import type { ShowcaseMedia } from '../data/services';
 import { clients } from '../data/clients';
 import { site, whatsappHref } from '../data/site';
 import { ORG_ID, WEBSITE_ID, abs, areaServed, breadcrumbList, faqPage, jsonLd } from '../lib/schema';
+import { langOf, locale, routes, t } from '../i18n';
 
 interface Props {
   page: ServicePage;
 }
 
 const { page } = Astro.props;
+const lang = langOf(Astro.url);
+const ui = t(lang);
+const home = routes.home[lang];
+const contactHref = `${home}#${ui.anchors.contact}`;
 const url = abs(page.path);
 
 const graph = [
@@ -29,12 +34,12 @@ const graph = [
     url,
     name: page.seoTitle,
     description: page.seoDescription,
-    inLanguage: 'tr-TR',
+    inLanguage: locale[lang].bcp47,
     isPartOf: { '@id': WEBSITE_ID },
     breadcrumb: { '@id': `${url}#breadcrumb` },
   },
   breadcrumbList(url, [
-    { name: 'Ana sayfa', path: '/' },
+    { name: ui.home, path: home },
     { name: page.breadcrumb, path: page.path },
   ]),
   {
@@ -43,10 +48,10 @@ const graph = [
     name: page.h1,
     description: page.seoDescription,
     provider: { '@type': 'Organization', '@id': ORG_ID, name: site.name, url: abs('/') },
-    areaServed,
+    areaServed: areaServed(lang),
     url,
   },
-  faqPage(url, page.faq),
+  faqPage(lang, url, page.faq),
 ];
 
 const frameStyle = (m: ShowcaseMedia) => `--focus:${m.focus ?? '50% 50%'};--zoom:${m.zoom ?? 1};--ratio:${m.ratio ?? '4 / 5'}`;
@@ -59,18 +64,18 @@ const phone = site.phones[0]!;
   <script is:inline slot="head" type="application/ld+json" set:html={jsonLd(graph)} />
   <Header />
 
-  <main id="icerik">
+  <main id={ui.anchors.main}>
     <section class="intro" aria-labelledby="sayfa-baslik">
       <div class="container-x">
-        <Breadcrumbs items={[{ label: 'Ana sayfa', href: '/' }, { label: page.breadcrumb }]} />
+        <Breadcrumbs items={[{ label: ui.home, href: home }, { label: page.breadcrumb }]} />
         <div class="intro-grid">
           <div>
             <h1 id="sayfa-baslik" class="intro-title">{page.h1}</h1>
             <p class="intro-lede">{page.lede}</p>
             <div class="cta-row">
-              <a href="/#iletisim" class="btn btn-primary">Teklif Al</a>
-              <a href={whatsappHref} class="btn btn-ghost" target="_blank" rel="noopener">
-                WhatsApp ile yazın<span class="sr-only"> (yeni sekmede açılır)</span>
+              <a href={contactHref} class="btn btn-primary">{ui.cta}</a>
+              <a href={whatsappHref(lang)} class="btn btn-ghost" target="_blank" rel="noopener">
+                {ui.servicePage.whatsapp}<span class="sr-only"> {ui.newTab}</span>
               </a>
             </div>
           </div>
@@ -93,8 +98,8 @@ const phone = site.phones[0]!;
       </div>
     </section>
 
-    <nav class="container-x toc" aria-label="Bu sayfada">
-      <p class="toc-label">Bu sayfada</p>
+    <nav class="container-x toc" aria-label={ui.servicePage.toc}>
+      <p class="toc-label">{ui.servicePage.toc}</p>
       <ul role="list">
         {
           page.blocks.map((block) => (
@@ -103,7 +108,7 @@ const phone = site.phones[0]!;
             </li>
           ))
         }
-        <li><a href="#sss">Sık sorulan sorular</a></li>
+        <li><a href={`#${ui.anchors.faq}`}>{ui.servicePage.faq}</a></li>
       </ul>
     </nav>
 
@@ -164,7 +169,7 @@ const phone = site.phones[0]!;
                       <a href={client.url} target="_blank" rel="noopener">
                         <span>
                           {client.name}
-                          <span class="sr-only"> dijital menüsü (yeni sekmede açılır)</span>
+                          <span class="sr-only"> {ui.servicePage.menuOf} {ui.newTab}</span>
                         </span>
                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                           <path d="M4 10 10 4M5 4h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -187,7 +192,7 @@ const phone = site.phones[0]!;
         <h2 id="cta-title" class="section-title">{page.cta.title}</h2>
         <p class="cta-body">{page.cta.body}</p>
         <div class="cta-row">
-          <a href="/#iletisim" class="btn btn-primary">Teklif formuna git</a>
+          <a href={contactHref} class="btn btn-primary">{ui.servicePage.toForm}</a>
           <a href={`tel:+${phone.e164}`} class="btn btn-ghost">{phone.display}</a>
         </div>
       </div>

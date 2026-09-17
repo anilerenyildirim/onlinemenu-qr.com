@@ -17,7 +17,8 @@ import '../styles/global.css';
 
 import hankenLatin from '@fontsource-variable/hanken-grotesk/files/hanken-grotesk-latin-wght-normal.woff2?url';
 
-import { site } from '../data/site';
+import { site, siteCopy } from '../data/site';
+import { alternatesOf, langOf, langs, locale, t } from '../i18n';
 
 interface Props {
   title?: string;
@@ -28,13 +29,17 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title = site.title, description = site.description, intro = false, noindex = false } = Astro.props;
-const ogImage = new URL('/og.jpg', Astro.site).href;
+const lang = langOf(Astro.url);
+const ui = t(lang);
+const { title = siteCopy[lang].title, description = siteCopy[lang].description, intro = false, noindex = false } = Astro.props;
+const ogImage = new URL(lang === 'tr' ? '/og.jpg' : '/og-en.jpg', Astro.site).href;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// hreflang: yalnız karşılığı olan ve dizine açık sayfalarda. x-default → Türkçe.
+const alternates = noindex ? null : alternatesOf(Astro.url);
 ---
 
 <!doctype html>
-<html lang="tr">
+<html lang={locale[lang].html}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -43,6 +48,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="theme-color" content="#0C0C0A" />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
+    {alternates && langs.map((l) => <link rel="alternate" hreflang={locale[l].html} href={new URL(alternates[l], Astro.site).href} />)}
+    {alternates && <link rel="alternate" hreflang="x-default" href={new URL(alternates.tr, Astro.site).href} />}
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -51,7 +58,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <link rel="preload" href={hankenLatin} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale" content={locale[lang].og} />
+    {alternates && langs.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={locale[l].og} />)}
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -59,7 +67,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="onlinemenu-qr: dijital QR menü, NFC yorum standı ve web sitesi" />
+    <meta property="og:image:alt" content={ui.ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -79,7 +87,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     }
   </head>
   <body>
-    <a href="#icerik" class="skip-link">İçeriğe geç</a>
+    <a href={`#${ui.anchors.main}`} class="skip-link">{ui.skipLink}</a>
     <slot name="overlay" />
     <slot />
   </body>

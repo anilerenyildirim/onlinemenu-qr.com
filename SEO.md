@@ -54,13 +54,14 @@ Tek sayfalık yeni bir sitenin öne çıkmasını en çok bunlar belirler.
 
 ## 4. Sıradaki öneriler
 
-- **PLANLANDI — ŞİMDİ YAPILMAYACAK: Site Türkçe + İngilizce olacak.** Avrupa'daki işletmelere ulaşmak için. Yapılırken:
-  - URL yapısı: Türkçe kökte kalır (`/`, `/qr-menu/`), İngilizce `/en/` altında (`/en/`, `/en/qr-menu/`, `/en/nfc-google-review-stand/`).
-  - Her sayfada `hreflang="tr"`, `hreflang="en"` ve `x-default` karşılıklı bağlantıları; sitemap'te alternatifler.
-  - İçerik verisi (`src/data/*.ts`) dile göre ayrılır; JSON-LD `inLanguage` sayfa diline göre.
-  - İngilizce metinler çeviri değil, İngilizce arama niyetine göre yazılır ("QR code menu", "NFC Google review stand").
-  - Avrupa şartları İngilizce sayfalarda da açıkça yer alır (baskı ve NFC stant yok, fotoğraflı menü için ürün fotoğrafları işletmeden).
-  - Header'a dil seçici.
+- **YAPILDI (17 Eylül 2026): Site Türkçe + İngilizce.**
+  - Türkçe kökte (`/`, `/qr-menu/`, `/nfc-google-yorum-standi/`), İngilizce `/en/` altında (`/en/`, `/en/qr-menu/`, `/en/nfc-google-review-stand/`). Eşleme: `src/i18n/index.ts` → `routes`.
+  - Her sayfada `hreflang` tr / en / x-default (→ Türkçe); sitemap'te `xhtml:link` alternatifleri. KVKK ve 404'ün karşılığı yok, hreflang basılmaz.
+  - Arayüz metinleri `src/i18n`, içerik `src/data/*.ts` içinde dile göre (`Record<Lang, …>`). Dil adresten okunur (`langOf(Astro.url)`).
+  - JSON-LD `inLanguage` sayfa diline göre; İngilizce paylaşım görseli `public/og-en.jpg`.
+  - İngilizce metinler İngilizce arama niyetine göre yazıldı; Avrupa şartları (baskı ve NFC stant yok, ürün fotoğrafları işletmeden) İngilizce sayfalarda ayrı bölüm ve SSS olarak var. NFC sayfası "yalnız Türkiye" diye açıkça başlıyor.
+  - Header'da dil seçici (TR / EN), karşılık sayfaya gider.
+  - Açık: İngilizce formdaki onay bağlantısı Türkçe KVKK metnine gidiyor; AB'deki işletmeler için GDPR uyumlu İngilizce gizlilik metni hukukçuyla hazırlanmalı.
 
 - **Web sitesi hizmet sayfası** (`/restoran-web-sitesi/`): Aynı `ServicePage` layout'uyla, yalnızca içerik verisi eklenerek yapılır.
 - **Font subsetting** (aşama 4): Mobil hız, sıralama sinyallerinden biri.

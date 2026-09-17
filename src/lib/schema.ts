@@ -4,21 +4,24 @@
  */
 import { site } from '../data/site';
 import type { Faq } from '../data/faq';
+import type { Lang } from '../i18n';
+import { t } from '../i18n';
 
 export const ORG_ID = `${site.url}/#organization`;
 export const WEBSITE_ID = `${site.url}/#website`;
 
 /** Hizmet bölgesi: Türkiye'nin tüm illeri + Avrupa (Avrupa'da baskı yok, bkz. data/site.ts). */
-export const areaServed = [
-  { '@type': 'Country', name: 'Türkiye' },
-  { '@type': 'Continent', name: 'Avrupa' },
-] as const;
+export const areaServed = (lang: Lang) =>
+  [
+    { '@type': 'Country', name: 'Türkiye' },
+    { '@type': 'Continent', name: lang === 'tr' ? 'Avrupa' : 'Europe' },
+  ] as const;
 
 export const abs = (path: string) => new URL(path, site.url).href;
 
-export const faqPage = (url: string, items: Faq[]) => ({
+export const faqPage = (lang: Lang, url: string, items: Faq[]) => ({
   '@type': 'FAQPage',
-  '@id': `${url}#sss`,
+  '@id': `${url}#${t(lang).anchors.faq}`,
   mainEntity: items.map((item) => ({
     '@type': 'Question',
     name: item.q,

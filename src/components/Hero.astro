@@ -9,6 +9,9 @@
 import BlurText from './BlurText.astro';
 import Aurora from './islands/Aurora';
 import { site } from '../data/site';
+import { langOf, t } from '../i18n';
+
+const ui = t(langOf(Astro.url));
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -24,20 +27,20 @@ import { site } from '../data/site';
   </div>
 
   <div class="container-x hero-content">
-    <BlurText tag="h1" class="hero-title" text="QR menü ve NFC stantlarla işletmenizin dijital vitrini." />
+    <BlurText tag="h1" class="hero-title" text={ui.hero.title} />
 
     <p class="hero-lede" data-hero-fade>
-      Masadaki QR menüden Google yorumlarınıza ve Instagram'ınıza yönlendiren NFC kartlara, oradan web sitenize kadar. Tasarım bir kalıba değil, işletmenize göre şekillenir.
+      {ui.hero.lede}
     </p>
 
     <div class="hero-cta" data-hero-fade>
-      <span data-magnet><a href="#iletisim" class="btn btn-primary">Teklif Al</a></span>
+      <span data-magnet><a href={`#${ui.anchors.contact}`} class="btn btn-primary">{ui.cta}</a></span>
       <a href={site.sampleMenuUrl} class="btn btn-ghost" target="_blank" rel="noopener">
-        Örnek Menü
+        {ui.hero.sample}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M4 10 10 4M5 4h5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
-        <span class="sr-only">(yeni sekmede açılır)</span>
+        <span class="sr-only">{ui.newTab}</span>
       </a>
     </div>
   </div>

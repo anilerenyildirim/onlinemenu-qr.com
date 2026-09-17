@@ -1,19 +1,27 @@
 ---
 import Wordmark from './Wordmark.astro';
+import { alternatesOf, langOf, routes, t } from '../i18n';
+
+const lang = langOf(Astro.url);
+const ui = t(lang);
+const home = routes.home[lang];
+const other = lang === 'tr' ? 'en' : 'tr';
+// Karşılığı olmayan sayfada (kvkk, 404) diğer dilin ana sayfası
+const otherHref = (alternatesOf(Astro.url) ?? routes.home)[other];
 
 const links = [
-  { href: '/qr-menu/', label: 'QR Menü' },
-  { href: '/nfc-google-yorum-standi/', label: 'NFC Stantlar' },
-  { href: '/#sss', label: 'SSS' },
-  { href: '/#iletisim', label: 'İletişim' },
+  { href: routes.qrMenu[lang], label: ui.nav.qrMenu },
+  { href: routes.nfc[lang], label: ui.nav.nfc },
+  { href: `${home}#${ui.anchors.faq}`, label: ui.nav.faq },
+  { href: `${home}#${ui.anchors.contact}`, label: ui.nav.contact },
 ];
 ---
 
 <header class="site-header" data-header>
   <div class="container-x header-row">
-    <Wordmark href="/" />
+    <Wordmark href={home} />
 
-    <nav aria-label="Ana menü" class="header-nav">
+    <nav aria-label={ui.nav.label} class="header-nav">
       <ul role="list">
         {
           links.map((link) => (
@@ -25,7 +33,12 @@ const links = [
       </ul>
     </nav>
 
-    <a href="/#iletisim" class="btn btn-primary btn-sm">Teklif Al</a>
+    <div class="header-actions">
+      <a href={otherHref} class="lang-switch" hreflang={ui.langSwitch.hreflang} lang={ui.langSwitch.hreflang} aria-label={ui.langSwitch.title}>
+        {ui.langSwitch.label}
+      </a>
+      <a href={`${home}#${ui.anchors.contact}`} class="btn btn-primary btn-sm">{ui.cta}</a>
+    </div>
   </div>
 </header>
 
@@ -57,6 +70,35 @@ const links = [
 
   .header-nav {
     display: none;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .lang-switch {
+    display: inline-grid;
+    place-items: center;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-muted);
+    transition: color 0.25s ease;
+  }
+  .lang-switch:hover {
+    color: var(--color-text);
+  }
+  /* Dar telefonlarda wordmark + dil + CTA tek satıra sığsın */
+  @media (max-width: 399px) {
+    .header-actions {
+      gap: 0.125rem;
+    }
+    .lang-switch {
+      min-width: 2.25rem;
+    }
   }
   .header-nav ul {
     display: flex;

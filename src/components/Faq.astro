@@ -5,6 +5,7 @@
  * FAQPage JSON-LD'si sayfanın kendi StructuredData'sında üretilir.
  */
 import type { Faq } from '../data/faq';
+import { langOf, t } from '../i18n';
 
 interface Props {
   id?: string;
@@ -14,7 +15,8 @@ interface Props {
   tone?: 'bg' | 'surface';
 }
 
-const { id = 'sss', title = 'Sık sorulan sorular', items, tone = 'bg' } = Astro.props;
+const ui = t(langOf(Astro.url));
+const { id = ui.anchors.faq, title = ui.faq.title, items, tone = 'bg' } = Astro.props;
 ---
 
 <section id={id} class:list={['faq', `faq--${tone}`]} aria-labelledby={`${id}-title`}>

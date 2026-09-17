@@ -1,6 +1,6 @@
 /**
  * SEO görselleri — çıktılar public/ altına yazılır ve commit'lenir.
- *   og.jpg                 1200×630  paylaşım önizlemesi (WhatsApp, LinkedIn, X, Google Discover)
+ *   og.jpg / og-en.jpg     1200×630  paylaşım önizlemesi, Türkçe ve İngilizce (WhatsApp, LinkedIn, X, Google Discover)
  *   apple-touch-icon.png   180×180
  *   icon-192.png / 512     web manifest
  *   favicon.ico            32×32 (PNG gömülü ICO) — /favicon.ico'yu doğrudan isteyen tarayıcı/botlar için
@@ -37,15 +37,22 @@ const photoY = (H - photoH) / 2;
 
 const brand = h600.path('onlinemenu', 30, PAD + 54, PAD + 30, -0.015);
 const brandQr = h600.path('-qr', 30, PAD + 54 + brand.width, PAD + 30, -0.015);
-
-const titleLines = ['Dijital QR menü,', 'NFC yorum standı', 've web sitesi'];
-const titleSize = 60;
-const title = titleLines.map((line, i) => h500.path(line, titleSize, PAD, 250 + i * 70, -0.03).d).join('');
-
-const sub = h500.path('Kafe ve restoranlar için, tek elden.', 26, PAD, 250 + titleLines.length * 70 + 22, -0.01);
 const url = h500.path('onlinemenu-qr.com', 22, PAD, H - PAD + 6, 0);
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+// QR stant fotoğrafı: ürün ortada, yakın kadraj
+const photo = await sharp('src/assets/showcase/qr-menu-cafe-leo.jpg')
+  .extract({ left: 90, top: 330, width: 720, height: 814 })
+  .resize(photoW, photoH)
+  .composite([{ input: Buffer.from(`<svg width="${photoW}" height="${photoH}"><rect width="${photoW}" height="${photoH}" rx="22" fill="#fff"/></svg>`), blend: 'dest-in' }])
+  .png()
+  .toBuffer();
+
+const ogImage = async (titleLines, subText) => {
+  const titleSize = 60;
+  const title = titleLines.map((line, i) => h500.path(line, titleSize, PAD, 250 + i * 70, -0.03).d).join('');
+  const sub = h500.path(subText, 26, PAD, 250 + titleLines.length * 70 + 22, -0.01);
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
   <defs>
     <radialGradient id="glow" cx="0.82" cy="0" r="0.75">
       <stop offset="0" stop-color="${C.accent}" stop-opacity="0.16"/>
@@ -63,19 +70,16 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
   <rect x="${photoX - 1}" y="${photoY - 1}" width="${photoW + 2}" height="${photoH + 2}" rx="23" fill="none" stroke="${C.line}" stroke-width="2"/>
 </svg>`;
 
-// QR stant fotoğrafı: ürün ortada, yakın kadraj
-const photo = await sharp('src/assets/showcase/qr-menu-cafe-leo.jpg')
-  .extract({ left: 90, top: 330, width: 720, height: 814 })
-  .resize(photoW, photoH)
-  .composite([{ input: Buffer.from(`<svg width="${photoW}" height="${photoH}"><rect width="${photoW}" height="${photoH}" rx="22" fill="#fff"/></svg>`), blend: 'dest-in' }])
-  .png()
-  .toBuffer();
+  return sharp(Buffer.from(svg))
+    .composite([{ input: photo, left: photoX, top: photoY }])
+    .jpeg({ quality: 86, mozjpeg: true })
+    .toBuffer();
+};
 
-const og = await sharp(Buffer.from(svg))
-  .composite([{ input: photo, left: photoX, top: photoY }])
-  .jpeg({ quality: 86, mozjpeg: true })
-  .toBuffer();
+const og = await ogImage(['Dijital QR menü,', 'NFC yorum standı', 've web sitesi'], 'Kafe ve restoranlar için, tek elden.');
 writeFileSync('public/og.jpg', og);
+const ogEn = await ogImage(['QR code menus', 'and websites for', 'restaurants'], 'For cafés in Europe and Türkiye, set up remotely.');
+writeFileSync('public/og-en.jpg', ogEn);
 
 // ─── İkonlar ────────────────────────────────────────────────────────────────
 const iconSvg = (size, pad) =>
@@ -104,4 +108,4 @@ ico.writeUInt32LE(png32.length, 14);
 ico.writeUInt32LE(22, 18); // veri ofseti
 writeFileSync('public/favicon.ico', Buffer.concat([ico, png32]));
 
-console.log(`og.jpg ${(og.length / 1024).toFixed(0)} KB · ikonlar yazıldı`);
+console.log(`og.jpg ${(og.length / 1024).toFixed(0)} KB · og-en.jpg ${(ogEn.length / 1024).toFixed(0)} KB · ikonlar yazıldı`);

@@ -5,14 +5,18 @@
  *
  * LocalBusiness yerine Organization: LocalBusiness açık adres ister, adres henüz yok.
  */
-import { site } from '../data/site';
+import { site, siteCopy } from '../data/site';
 import { showcase, services } from '../data/services';
 import { homeFaq } from '../data/faq';
 import { servicePages } from '../data/pages';
 import { ORG_ID, WEBSITE_ID, abs, areaServed, faqPage, jsonLd } from '../lib/schema';
+import { langOf, langs, locale, routes, t } from '../i18n';
 
-const home = abs('/');
-const pageFor = (id: string) => servicePages.find((p) => p.serviceId === id);
+const lang = langOf(Astro.url);
+const ui = t(lang);
+const home = abs(routes.home[lang]);
+const area = areaServed(lang);
+const pageFor = (id: string) => servicePages[lang].find((p) => p.serviceId === id);
 
 const graph = [
   {
@@ -22,32 +26,45 @@ const graph = [
     url: home,
     logo: { '@type': 'ImageObject', url: abs('/icon-512.png'), width: 512, height: 512 },
     image: abs('/og.jpg'),
-    description: site.description,
+    description: siteCopy[lang].description,
     email: site.email,
     telephone: `+${site.phones[0]!.e164}`,
     legalName: site.legalName,
-    areaServed,
+    areaServed: area,
     contactPoint: site.phones.map((phone) => ({
       '@type': 'ContactPoint',
       telephone: `+${phone.e164}`,
       contactType: 'sales',
-      areaServed,
+      areaServed: area,
+      // TEYİT: İngilizce görüşme yapılıyorsa 'English' eklenebilir.
       availableLanguage: ['Turkish'],
     })),
     parentOrganization: { '@type': 'Organization', name: site.parent.name, url: site.parent.url },
-    knowsAbout: ['QR menü', 'Dijital menü', 'Karekod menü', 'NFC Google yorum standı', 'Restoran web sitesi'],
+    knowsAbout:
+      lang === 'tr'
+        ? ['QR menü', 'Dijital menü', 'Karekod menü', 'NFC Google yorum standı', 'Restoran web sitesi']
+        : ['QR code menu', 'Digital menu', 'Contactless menu', 'NFC Google review stand', 'Restaurant website'],
     // TEYİT: Instagram / Google İşletme Profili bağlantıları eklenecek.
     sameAs: [],
   },
   {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
-    url: home,
+    url: abs('/'),
     name: site.name,
-    inLanguage: 'tr-TR',
+    inLanguage: langs.map((l) => locale[l].bcp47),
     publisher: { '@id': ORG_ID },
   },
-  ...[...showcase, ...services].map((item) => {
+  {
+    '@type': 'WebPage',
+    '@id': home,
+    url: home,
+    name: siteCopy[lang].title,
+    description: siteCopy[lang].description,
+    inLanguage: locale[lang].bcp47,
+    isPartOf: { '@id': WEBSITE_ID },
+  },
+  ...[...showcase[lang], ...services[lang]].map((item) => {
     const page = pageFor(item.id);
     return {
       '@type': 'Service',
@@ -55,11 +72,11 @@ const graph = [
       name: item.title,
       description: item.body,
       provider: { '@id': ORG_ID },
-      areaServed,
-      url: page ? abs(page.path) : `${home}#hizmetler`,
+      areaServed: area,
+      url: page ? abs(page.path) : `${home}#${ui.anchors.services}`,
     };
   }),
-  faqPage(home, homeFaq),
+  faqPage(lang, home, homeFaq[lang]),
 ];
 ---
 

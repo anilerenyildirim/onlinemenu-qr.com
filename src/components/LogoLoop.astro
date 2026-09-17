@@ -17,6 +17,9 @@
  */
 import { Image } from 'astro:assets';
 import { clients } from '../data/clients';
+import { langOf, t } from '../i18n';
+
+const ui = t(langOf(Astro.url));
 
 const COPIES = 4;
 const SPEED = 36; // px/sn
@@ -35,7 +38,7 @@ const items = clients.map((client, i) => {
 
 <section class="clients" aria-labelledby="clients-title">
   <div class="container-x">
-    <h2 id="clients-title" class="clients-title">Bizi tercih eden işletmeler</h2>
+    <h2 id="clients-title" class="clients-title">{ui.clients.title}</h2>
   </div>
 
   <svg class="sprite" aria-hidden="true" focusable="false">
@@ -65,12 +68,12 @@ const items = clients.map((client, i) => {
                   href={item.url}
                   target="_blank"
                   rel="noopener"
-                  aria-label={`${item.name} dijital menüsü`}
+                  aria-label={ui.clients.menuOf(item.name)}
                   tabindex={copy > 0 ? -1 : undefined}
                   style={item.scale ? `--logo-scale:${item.scale}` : undefined}
                 >
                   {item.svg ? (
-                    <svg class="logo-img" viewBox={item.svg.viewBox} style={`aspect-ratio:${item.ratio}`} role="img" aria-label={item.alt}>
+                    <svg class="logo-img" viewBox={item.svg.viewBox} style={`aspect-ratio:${item.ratio}`} role="img" aria-label={ui.clients.logoOf(item.name)}>
                       <use href={`#${item.id}`} />
                     </svg>
                   ) : (
@@ -78,7 +81,7 @@ const items = clients.map((client, i) => {
                       <Image
                         class="logo-img"
                         src={item.logo}
-                        alt={item.alt}
+                        alt={ui.clients.logoOf(item.name)}
                         height={84}
                         densities={[1, 2]}
                         format="webp"

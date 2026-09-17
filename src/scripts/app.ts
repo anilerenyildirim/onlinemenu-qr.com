@@ -125,6 +125,35 @@ function initMagnet() {
  * GEÇİCİ form gönderimi — /api/contact (aşama 3) yazılana kadar doğrulanmış talebi
  * WhatsApp mesajı olarak açar. Hiçbir veri tarayıcıda saklanmaz.
  */
+const formText = {
+  tr: {
+    invalidPhone: 'Geçerli bir telefon numarası girin (örn. 0532 123 45 67 veya +49 151 2345 6789).',
+    checkFields: 'Lütfen işaretli alanları kontrol edin.',
+    noChannel: 'Talep şu an iletilemedi. Lütfen bizi telefonla arayın.',
+    greeting: 'Merhaba, onlinemenu-qr için teklif almak istiyorum.',
+    name: 'Ad soyad',
+    business: 'İşletme',
+    phone: 'Telefon',
+    email: 'E-posta',
+    services: 'İlgilendiğim hizmetler',
+    message: 'Mesaj',
+    sent: 'WhatsApp açıldı. Mesajı göndermeniz yeterli; en kısa sürede size dönüş yapacağız.',
+  },
+  en: {
+    invalidPhone: 'Please enter a valid phone number with country code (e.g. +49 151 2345 6789).',
+    checkFields: 'Please check the highlighted fields.',
+    noChannel: 'Your request could not be sent right now. Please give us a call.',
+    greeting: "Hello, I'd like a quote for onlinemenu-qr.",
+    name: 'Name',
+    business: 'Business',
+    phone: 'Phone',
+    email: 'Email',
+    services: 'Services',
+    message: 'Message',
+    sent: "WhatsApp has opened. Just send the message and we'll get back to you soon.",
+  },
+};
+
 function initContactForm() {
   const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
   const status = document.querySelector<HTMLElement>('[data-form-status]');
@@ -135,6 +164,7 @@ function initContactForm() {
   const INTL_PHONE = /^(?:\+|00)(?!90)[1-9]\d{7,14}$/;
   const phone = form.elements.namedItem('phone') as HTMLInputElement;
   const waNumber = form.dataset.wa;
+  const text = document.documentElement.lang === 'en' ? formText.en : formText.tr;
 
   const show = (text: string, tone: 'ok' | 'error') => {
     status.textContent = text;
@@ -152,18 +182,18 @@ function initContactForm() {
 
     const digits = phone.value.replace(/[\s()-]/g, '');
     const phoneOk = TR_PHONE.test(digits) || INTL_PHONE.test(digits);
-    phone.setCustomValidity(digits && !phoneOk ? 'Geçerli bir telefon numarası girin (örn. 0532 123 45 67 veya +49 151 2345 6789).' : '');
+    phone.setCustomValidity(digits && !phoneOk ? text.invalidPhone : '');
 
     if (!form.checkValidity()) {
       form.querySelectorAll<HTMLInputElement>('input, textarea').forEach((el) => {
         el.toggleAttribute('aria-invalid', !el.validity.valid);
       });
       form.reportValidity();
-      show('Lütfen işaretli alanları kontrol edin.', 'error');
+      show(text.checkFields, 'error');
       return;
     }
     if (!waNumber) {
-      show('Talep şu an iletilemedi. Lütfen bizi telefonla arayın.', 'error');
+      show(text.noChannel, 'error');
       return;
     }
 
@@ -172,18 +202,18 @@ function initContactForm() {
       (el) => el.nextElementSibling?.textContent?.trim() ?? el.value,
     );
     const lines = [
-      'Merhaba, onlinemenu-qr için teklif almak istiyorum.',
+      text.greeting,
       '',
-      `Ad soyad: ${data.get('name')}`,
-      `İşletme: ${data.get('business')}`,
-      `Telefon: ${data.get('phone')}`,
-      data.get('email') ? `E-posta: ${data.get('email')}` : '',
-      labels.length ? `İlgilendiğim hizmetler: ${labels.join(', ')}` : '',
-      data.get('message') ? `Mesaj: ${data.get('message')}` : '',
+      `${text.name}: ${data.get('name')}`,
+      `${text.business}: ${data.get('business')}`,
+      `${text.phone}: ${data.get('phone')}`,
+      data.get('email') ? `${text.email}: ${data.get('email')}` : '',
+      labels.length ? `${text.services}: ${labels.join(', ')}` : '',
+      data.get('message') ? `${text.message}: ${data.get('message')}` : '',
     ].filter((line, i) => line !== '' || i === 1);
 
     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
-    show('WhatsApp açıldı. Mesajı göndermeniz yeterli; en kısa sürede size dönüş yapacağız.', 'ok');
+    show(text.sent, 'ok');
     form.reset();
   });
 }

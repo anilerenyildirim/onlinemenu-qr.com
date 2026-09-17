@@ -2,10 +2,13 @@
 interface Props {
   items: { label: string; href?: string }[];
 }
+import { langOf, t } from '../i18n';
+
 const { items } = Astro.props;
+const ui = t(langOf(Astro.url));
 ---
 
-<nav aria-label="Sayfa konumu" class="crumbs">
+<nav aria-label={ui.breadcrumbLabel} class="crumbs">
   <ol role="list">
     {
       items.map((item, i) => (
